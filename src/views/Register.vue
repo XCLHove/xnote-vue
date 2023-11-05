@@ -45,11 +45,11 @@ const rules = ref<FormRules<RegisterForm>>({
     {
       validator: (rule: any, value: string, callback: Function) => {
         rule = rule
-        let pattern = /^\w{6,30}$/g
+        let pattern = /^[\w\.\*]{6,30}$/g
         if (!pattern.test(value)) callback(new Error())
         return true
       },
-      message: '6-30位的数字、字母或下划线',
+      message: '6-30位的数字、字母、下划线、"."或"*"',
       trigger: 'blur'
     },
   ],

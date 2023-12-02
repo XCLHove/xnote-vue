@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
-import User from "../interfaces/User.ts";
-import {getUserSelf} from "../api/UserApi.ts";
-import Result from "../interfaces/Result.ts";
+import {User} from "../../interfaces/entity/User.ts";
+import {getUserSelf} from "../../api/UserApi.ts";
+import {Result} from "../../interfaces/Result.ts";
 
 const user: Ref<User | undefined> = ref()
 const avatarContent = ref('X')

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
 import {useRoute} from "vue-router";
-import Note from "../interfaces/Note.ts";
-import {getOneNote} from "../api/NoteApi.ts";
-import Result from "../interfaces/Result.ts";
-import ResultStatus from "../enums/ResultStatus.ts";
-import Keyword from "../classes/Keyword.ts";
+import {Note} from "../../interfaces/entity/Note.ts";
+import {getOneNote} from "../../api/NoteApi.ts";
+import {Result} from "../../interfaces/Result.ts";
+import ResultStatus from "../../enums/ResultStatus.ts";
+import Keyword from "../../classes/Keyword.ts";
 
 const note = ref({
   content: ''
@@ -47,30 +47,37 @@ onMounted(() => {
 .margin {
   margin: 10px auto;
 }
+
 .border {
   border-radius: 5px;
   border: #becece solid 1px;
 }
+
 .width95 {
   width: 95%;
   .margin();
 }
+
 .title {
   .border();
   .width95();
+
   h1 {
     text-align: center;
   }
 }
+
 .keywords {
   .border();
   .width95();
+
   .el-tag {
     height: 32px;
     margin: 5px;
     font-size: 16px;
   }
 }
+
 .note {
   .border();
   .width95();

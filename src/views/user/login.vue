@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {userLogin} from "../api/UserApi.ts";
+import {userLogin} from "../../api/UserApi.ts";
 import {onMounted, ref} from "vue";
-import Result from "../interfaces/Result.ts";
-import ResultStatus from "../enums/ResultStatus.ts";
-import {elPrompt} from "../utils/elPrompt.ts";
-import router from "../router/router.ts";
+import {Result} from "../../interfaces/Result.ts";
+import ResultStatus from "../../enums/ResultStatus.ts";
+import {elPrompt} from "../../utils/elPrompt.ts";
+import router from "../../router/router.ts";
 import {useRoute} from "vue-router";
-import LoginType from "../enums/LoginType.ts";
+import LoginType from "../../enums/LoginType.ts";
 
 const account = ref('')
 const password = ref('')
@@ -20,6 +20,7 @@ onMounted(() => {
  * @param result Result<token:string>
  */
 function loginCallback(result: Result<string>) {
+  console.log(result)
   if (result.status !== ResultStatus.SUCCESS) {
     return
   }

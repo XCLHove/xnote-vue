@@ -1,5 +1,5 @@
 import request from "../utils/request.ts";
-import RegisterForm from "../interfaces/RegisterForm.ts";
+import {UserDTO} from "../interfaces/entity/dto/UserDTO.ts";
 
 /**
  * 用户登录
@@ -23,7 +23,7 @@ export async function userLogin(account: string, password: string, callback: Fun
  * @param registerForm 用户注册信息
  * @param callback 回调函数
  */
-export async function userRegister(registerForm: RegisterForm, callback: Function) {
+export async function userRegister(registerForm: UserDTO, callback: Function) {
     await request.put('/users/register', registerForm).then(result => {
         if (callback) callback(result)
     })

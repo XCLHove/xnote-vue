@@ -1,8 +1,8 @@
 import request from "../utils/request.ts";
-import Note from "../interfaces/Note.ts";
+import {Note} from "../interfaces/entity/Note.ts";
 import {getUserSelf} from "./UserApi.ts";
-import Result from "../interfaces/Result.ts";
-import User from "../interfaces/User.ts";
+import {Result} from "../interfaces/Result.ts";
+import {User} from "../interfaces/entity/User.ts";
 
 /**
  * 获取一篇笔记

@@ -1,10 +1,7 @@
-import ResultType from "../enums/ResultType.ts";
 import ResultStatus from "../enums/ResultStatus.ts";
 
-interface Result<D> {
+export interface Result<T> {
     status: ResultStatus,
-    type: ResultType,
     message: string,
-    data: D
+    data: T
 }
-export default Result

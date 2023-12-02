@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build-sh": "vue-tsc && vite build && ./packge.sh",
+    "build-sh-no-vue-tsc": "vite build && ./packge.sh",
     "preview": "vite preview"
   },
   "dependencies": {
     "@kangc/v-md-editor": "^2.3.17",
     "axios": "^1.6.0",
     "element-plus": "^2.4.1",
+    "pinia": "^2.1.7",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
   },

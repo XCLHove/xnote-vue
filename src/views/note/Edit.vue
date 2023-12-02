@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
 import {useRoute} from "vue-router";
-import Note from "../interfaces/Note.ts";
-import {addNote, getOneNote, updateNote} from "../api/NoteApi.ts";
-import Result from "../interfaces/Result.ts";
-import ResultStatus from "../enums/ResultStatus.ts";
-import {elPrompt} from "../utils/elPrompt.ts";
-import Keyword from "../classes/Keyword.ts";
+import {Note} from "../../interfaces/entity/Note.ts";
+import {addNote, getOneNote, updateNote} from "../../api/NoteApi.ts";
+import {Result} from "../../interfaces/Result.ts";
+import ResultStatus from "../../enums/ResultStatus.ts";
+import {elPrompt} from "../../utils/elPrompt.ts";
+import Keyword from "../../classes/Keyword.ts";
+import {uploadImage} from "../../api/ImageApi.ts";
 
 const note = ref({content: ''}) as Ref<Note>
 const keywords: Ref<Keyword[]> = ref([])
@@ -83,6 +84,21 @@ function removeKeyword(removeKeyword: Keyword) {
     keywords.value[index].id = index
   })
 }
+
+async function handleUploadImage(event: any, insertImage: any, files: File[]) {
+  const imageFile = files[0]
+  let fileName = ''
+  await uploadImage(imageFile, (result:Result<string>) => {
+    fileName = result.data
+  })
+  const serverUrl = 'http://localhost:8080'
+  insertImage({
+    url: `${serverUrl}/image/${fileName}`,
+    desc: imageFile.name,
+    // width: 'auto',
+    // height: 'auto',
+  });
+}
 </script>
 
 <template>
@@ -103,7 +119,12 @@ function removeKeyword(removeKeyword: Keyword) {
         {{ keyword.name }}
       </el-tag>
     </div>
-    <v-md-editor v-model="note.content" @save="save"/>
+    <v-md-editor
+        v-model="note.content"
+        @save="save"
+        :disabled-menus="[]"
+        @upload-image="handleUploadImage"
+    />
   </div>
 </template>
 
@@ -118,20 +139,25 @@ function removeKeyword(removeKeyword: Keyword) {
     width: 100%;
   }
 }
+
 .keywords {
   margin: 5px 0;
+
   .el-input {
     display: inline;
   }
+
   .el-button {
     margin-left: 5px;
   }
+
   .el-tag {
     height: 32px;
     margin: 5px;
     font-size: 16px;
   }
 }
+
 .v-md-editor {
   height: calc(100vh - 74px);
 }

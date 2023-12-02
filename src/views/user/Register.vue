@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {FormInstance, FormRules} from "element-plus";
-import RegisterForm from "../interfaces/RegisterForm.ts";
-import {userRegister} from "../api/UserApi.ts";
-import Result from "../interfaces/Result.ts";
-import User from "../interfaces/User.ts";
-import router from "../router/router.ts";
-import {elPrompt} from "../utils/elPrompt.ts";
+import {UserDTO} from "../../interfaces/entity/dto/UserDTO.ts";
+import {userRegister} from "../../api/UserApi.ts";
+import {Result} from "../../interfaces/Result.ts";
+import {User} from "../../interfaces/entity/User.ts";
+import router from "../../router/router.ts";
+import {elPrompt} from "../../utils/elPrompt.ts";
 
 const registerFormRef = ref<FormInstance>()
-const registerForm = ref<RegisterForm>({
+const registerForm = ref<UserDTO>({
   name: '',
   account: '',
   password: '',
   password2: '',
   email: ''
 })
-const rules = ref<FormRules<RegisterForm>>({
+const rules = ref<FormRules<UserDTO>>({
   name: [
     {
       validator: (rule: any, value: string, callback: Function) => {
@@ -82,6 +82,7 @@ function submitForm(formEl: FormInstance | undefined) {
   if (!formEl) return
   formEl.validate((valid) => {
     if (!valid) return
+    console.log(registerForm.value)
     userRegister(registerForm.value, (result: Result<User>) => {
       if (result.status !== 200) return
       elPrompt('注册成功！', 'success')

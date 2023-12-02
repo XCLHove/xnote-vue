@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {onMounted, Ref, ref} from "vue";
-import Note from "../interfaces/Note.ts";
-import {deleteNote, getSelfNotes} from "../api/NoteApi.ts";
-import Result from "../interfaces/Result.ts";
-import router from "../router/router.ts";
-import {elPrompt} from "../utils/elPrompt.ts";
+import {Note} from "../../interfaces/entity/Note.ts";
+import {deleteNote, getSelfNotes} from "../../api/NoteApi.ts";
+import {Result} from "../../interfaces/Result.ts";
+import router from "../../router/router.ts";
+import {elPrompt} from "../../utils/elPrompt.ts";
 
 const notes: Ref<Note[]> = ref([])
 

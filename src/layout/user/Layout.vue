@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import Beianhao from "./Beianhao.vue";
+import Beianhao from "../Beianhao.vue";
 import LeftMenu from "./LeftMenu.vue";
 import Head from "./Head.vue";
 import {computed, onMounted, ref} from "vue";
@@ -22,9 +22,8 @@ onMounted(() => {
       </el-header>
       <el-container>
         <button class="menu-button" v-show="!showAsideMenu" @click="showDrawerMenu = true">菜单</button>
-        <el-aside v-show="showAsideMenu"><LeftMenu/></el-aside>
-        <el-drawer class="el-drawer" v-show="!showAsideMenu" v-model="showDrawerMenu" title="菜单"
-                   size="150" direction="ltr"><LeftMenu/></el-drawer>
+        <div v-show="showAsideMenu"><el-aside><LeftMenu/></el-aside></div>
+        <div v-show="!showAsideMenu"><el-drawer class="el-drawer" v-model="showDrawerMenu" title="菜单" size="150" direction="ltr"><LeftMenu/></el-drawer></div>
         <el-main><RouterView/></el-main>
       </el-container>
     </el-container>

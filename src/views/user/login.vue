@@ -20,7 +20,6 @@ onMounted(() => {
  * @param result Result<token:string>
  */
 function loginCallback(result: Result<string>) {
-  console.log(result)
   if (result.status !== ResultStatus.SUCCESS) {
     return
   }

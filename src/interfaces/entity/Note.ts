@@ -1,7 +1,9 @@
+import Keyword from "../../classes/Keyword.ts";
+
 export interface Note {
     id: number,
     title: string,
     content: string,
-    keywords: string,
+    keywords: Keyword[],
     userId: number
 }

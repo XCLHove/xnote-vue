@@ -1,5 +1,10 @@
 enum ResultType {
-    SUCCESS = "success",
-    ERROR = "error"
+    SUCCESS = 200,
+    ERROR = 500,
+    USER_SERVICE_EXCEPTION = 600,
+    USER_TOKEN_EXCEPTION = 601,
+    NOTE_SERVICE_EXCEPTION = 700,
+    ADMIN_SERVICE_EXCEPTION = 800,
+    ADMIN_TOKEN_EXCEPTION = 801
 }
 export default ResultType

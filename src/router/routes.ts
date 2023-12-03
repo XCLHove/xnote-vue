@@ -1,5 +1,5 @@
 import Home from "../views/Home.vue";
-import Preview from "../views/note/View.vue";
+import Preview from "../views/note/Preview.vue";
 import Edit from "../views/note/Edit.vue";
 import Login from "../views/user/login.vue";
 import UserNotes from "../views/note/UserNotes.vue";
@@ -12,7 +12,7 @@ const routes = [
         component: Layout,
         children: [
             { path: '/', component: Home },
-            { path: '/view/:noteId(\\d+)', component: Preview },
+            { path: '/preview/:noteId(\\d+)', component: Preview },
             { path: '/edit', component: Edit },
             { path: '/edit/:noteId(\\d+)', component: Edit },
             { path: '/login/:type(user|admin)', component: Login },

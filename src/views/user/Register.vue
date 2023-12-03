@@ -82,7 +82,6 @@ function submitForm(formEl: FormInstance | undefined) {
   if (!formEl) return
   formEl.validate((valid) => {
     if (!valid) return
-    console.log(registerForm.value)
     userRegister(registerForm.value, (result: Result<User>) => {
       if (result.status !== 200) return
       elPrompt('注册成功！', 'success')

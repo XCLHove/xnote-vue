@@ -2,26 +2,27 @@
 import {onMounted, Ref, ref} from "vue";
 import {useRoute} from "vue-router";
 import {Note} from "../../interfaces/entity/Note.ts";
-import {getOneNote} from "../../api/NoteApi.ts";
+import {getONoteById} from "../../api/NoteApi.ts";
 import {Result} from "../../interfaces/Result.ts";
 import ResultStatus from "../../enums/ResultStatus.ts";
 import Keyword from "../../classes/Keyword.ts";
+import {elPrompt} from "../../utils/elPrompt.ts";
 
-const note = ref({
-  content: ''
-}) as Ref<Note>
-const keywords: Ref<Keyword[]> = ref([])
+const note:Ref<Note> = ref({
+  content: "",
+  keywords: [],
+  title: ""
+})
 onMounted(() => {
-  const route = useRoute()
-  if (!route.params.noteId) return
-  const noteIdStr = route.params.noteId as string
-  const noteId = Number.parseInt(noteIdStr)
-  getOneNote(noteId, (result: Result<Note>) => {
-    if (result.status === ResultStatus.ERROR) return
-    if (result.data) note.value = result.data
-    keywords.value = JSON.parse(note.value.keywords)
+  const noteId = parseInt(<string>useRoute().params.noteId)
+  getONoteById(noteId, (result: Result<Note>) => {
+    note.value = result.data
   })
 })
+
+function handleCopyCodeSuccess(code: string) {
+  elPrompt("复制成功！", "success")
+}
 </script>
 
 <template>
@@ -30,7 +31,7 @@ onMounted(() => {
   </div>
   <div class="keywords">
     <el-tag
-        v-for="keyword in keywords"
+        v-for="keyword in note.keywords"
         :key="keyword.id"
         :closable="false"
         type="success"
@@ -39,7 +40,10 @@ onMounted(() => {
     </el-tag>
   </div>
   <div class="note">
-    <v-md-preview :text="note.content"></v-md-preview>
+    <v-md-preview
+        :text="note.content"
+        @copy-code-success="handleCopyCodeSuccess"
+    />
   </div>
 </template>
 

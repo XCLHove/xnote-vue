@@ -4,6 +4,7 @@ import Beianhao from "../Beianhao.vue";
 import LeftMenu from "./LeftMenu.vue";
 import Head from "./Head.vue";
 import {computed, onMounted, ref} from "vue";
+
 const screenWidth = ref(0)
 const showDrawerMenu = ref(false)
 const showAsideMenu = computed(() => {
@@ -22,9 +23,9 @@ onMounted(() => {
       </el-header>
       <el-container>
         <button class="menu-button" v-show="!showAsideMenu" @click="showDrawerMenu = true">菜单</button>
-        <div v-show="showAsideMenu"><el-aside><LeftMenu/></el-aside></div>
-        <div v-show="!showAsideMenu"><el-drawer class="el-drawer" v-model="showDrawerMenu" title="菜单" size="150" direction="ltr"><LeftMenu/></el-drawer></div>
-        <el-main><RouterView/></el-main>
+        <div v-if="showAsideMenu"><el-aside><LeftMenu/></el-aside></div>
+        <div v-else><el-drawer class="el-drawer" v-model="showDrawerMenu" title="菜单" size="150" direction="ltr"><LeftMenu/></el-drawer></div>
+        <el-main><div class="view"><RouterView/></div></el-main>
       </el-container>
     </el-container>
     <Beianhao/>
@@ -58,6 +59,11 @@ onMounted(() => {
         &:hover {
           transition: color linear .2s;
           color: var(--color-vue);
+        }
+      }
+      .el-main {
+        .view {
+          height: calc(100vh - 120px);
         }
       }
     }

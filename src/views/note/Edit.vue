@@ -10,6 +10,7 @@ import Keyword from "../../classes/Keyword.ts";
 import {uploadImage} from "../../api/ImageApi.ts";
 import {Config} from "../../interfaces/Config.ts";
 import getConfig from "../../utils/config.ts";
+import {Image} from "../../interfaces/entity/Image.ts";
 
 const note:Ref<Note> = ref({
   content: '',
@@ -88,19 +89,19 @@ function removeKeyword(removeKeyword: Keyword) {
 async function handleUploadImage(event: any, insertImage: any, files: File[]) {
   const imageFile = files[0]
   if (imageFile.size > (Math.pow(1024, 2) * 10)) return elPrompt('图片不能超过10MB', "warning")
-  let fileName = ''
-  await uploadImage(imageFile, (result: Result<string>) => {
-    fileName = result.data
+  let image: Image = {} as Image
+  await uploadImage(imageFile, (result: Result<Image>) => {
+    image = result.data
   })
   let serverUrl = ''
   await getConfig((config: Config) => {
     serverUrl = config.serverUrl
   })
   insertImage({
-    url: `${serverUrl}/image/${fileName}`,
-    desc: imageFile.name,
-    // width: 'auto',
-    // height: 'auto',
+    url: `${serverUrl}/image/downloadByName/${image.name}`,
+    desc: image.alias,
+    width: 'auto',
+    height: 'auto',
   });
 }
 

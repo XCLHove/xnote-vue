@@ -12,9 +12,7 @@ import {debounce} from "../../utils/debounce/debounce.ts";
 
 const loading = ref(false)
 
-/**
- * 分页
- */
+/** 分页 */
 const page = ref({
   total: 0,
   current: 1,
@@ -39,38 +37,41 @@ const page = ref({
   }),
   handleSizeChange: (value: number) => {
     page.value.size = value
-    getUserNote()
   },
   handleCurrentChange: (value: number) => {
     page.value.current = value
-    getUserNote()
   },
 })
+watch([() => page.value.current,() => page.value.size], () => {
+  searchLocked = false //分页数据发生变化，关闭搜索锁
+  searchNote()
+})
 
-/**
- * 搜索文本
- */
+/** 搜索文本 */
 const searchText = ref<{ title: string, content: string, keywords: string }>({
   title: '',
   content: '',
   keywords: '',
 })
-watch(searchText.value, () => {
+watch([searchText.value, ], () => {
+  searchLocked = false //搜索内容发生变化，关闭搜索锁
   loading.value = true
-  debounceGetUserNote()
+  debounceSearchNote()
 })
 
 onMounted(() => {
-  getUserNote()
+  searchNote()
 })
 
-/** 获取笔记（防抖） */
-const debounceGetUserNote = debounce(getUserNote, 1.5)
+let searchLocked = false
 
-/**
- * 获取笔记
- */
-async function getUserNote() {
+/** 搜索笔记（防抖） */
+const debounceSearchNote = debounce(searchNote, 1.5)
+
+/** 搜索笔记 */
+async function searchNote() {
+  if (searchLocked) return //检测搜索锁是否开启
+  searchLocked = true //开启搜索锁
   loading.value = true
   let userId = 0
   await getUserSelf((result: Result<User>) => {
@@ -121,10 +122,10 @@ const tableHeight = computed(() => {
 <template>
   <div class="container">
     <div class="search-part">
-      <el-input v-model="searchText.title" placeholder="搜索标题" @keyup.enter="getUserNote"/>
-      <el-input v-model="searchText.keywords" placeholder="搜索关键词" @keyup.enter="getUserNote"/>
-      <el-input v-model="searchText.content" placeholder="搜索笔记内容" @keyup.enter="getUserNote"/>
-      <el-button type="primary" @click="getUserNote">搜索</el-button>
+      <el-input v-model="searchText.title" placeholder="搜索标题" @keyup.enter="searchNote"/>
+      <el-input v-model="searchText.keywords" placeholder="搜索关键词" @keyup.enter="searchNote"/>
+      <el-input v-model="searchText.content" placeholder="搜索笔记内容" @keyup.enter="searchNote"/>
+      <el-button type="primary" @click="searchNote">搜索</el-button>
     </div>
     <div class="user-notes" v-loading="loading">
       <el-table :data="page.list" style="width: 100%" :height="tableHeight">

@@ -11,9 +11,8 @@ const searchText = ref({
   content: '',
   keywords: '',
 })
-
-
 watch(searchText.value, () => {
+  searchLocked = false //搜索内容发生变化，关闭搜索锁
   loading.value = true
   debounceSearchNote()
 })
@@ -29,8 +28,11 @@ function getRouterParam() {
   searchText.value.keywords = keywords ? keywords : ''
 }
 
+let searchLocked = false //搜索锁
 const debounceSearchNote = debounce(searchNote, 1.5)
 async function searchNote() {
+  if (searchLocked) return //检测搜索锁是否开启
+  searchLocked = true //搜索加锁
   loading.value = true
   const notePageDTO: NotePageDTO = {
     searchContent: searchText.value.content,
@@ -61,9 +63,7 @@ function preview(noteId: number) {
   window.open(`/preview/${noteId}`, '_blank')
 }
 
-/**
- * 分页
- */
+/** 分页 */
 const page = ref({
   total: 0,
   current: 1,
@@ -88,12 +88,14 @@ const page = ref({
   }),
   handleSizeChange: (value: number) => {
     page.value.size = value
-    searchNote()
   },
   handleCurrentChange: (value: number) => {
     page.value.current = value
-    searchNote()
   },
+})
+watch([() => page.value.current, () => page.value.size], () => {
+  searchLocked = false //分页数据发生变化，关闭搜索锁
+  searchNote()
 })
 
 const tableHeight = computed(() => {

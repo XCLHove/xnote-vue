@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {Note} from "../../interfaces/entity/Note.ts";
 import {deleteNoteById, pageNote} from "../../api/NoteApi.ts";
 import {Result} from "../../interfaces/Result.ts";
@@ -8,6 +8,7 @@ import {elPrompt} from "../../utils/elPrompt.ts";
 import {NotePageDTO} from "../../interfaces/entity/dto/NotePageDTO.ts";
 import {getUserSelf} from "../../api/UserApi.ts";
 import {User} from "../../interfaces/entity/User.ts";
+import {debounce} from "../../utils/debounce/debounce.ts";
 
 const loading = ref(false)
 
@@ -54,10 +55,17 @@ const searchText = ref<{ title: string, content: string, keywords: string }>({
   content: '',
   keywords: '',
 })
+watch(searchText.value, () => {
+  loading.value = true
+  debounceGetUserNote()
+})
 
 onMounted(() => {
   getUserNote()
 })
+
+/** 获取笔记（防抖） */
+const debounceGetUserNote = debounce(getUserNote, 1.5)
 
 /**
  * 获取笔记

@@ -29,20 +29,36 @@ onMounted(() => {
   })
 })
 
-/**
- * 保存笔记
- */
-function save() {
+/** 保存锁 */
+let saveLocked = false
+/** 保存笔记 */
+async function save() {
+  //检测保存锁是否开启
+  if (saveLocked) return elPrompt('正在保存中……', "warning", 1.5)
+  
+  //开启保存锁
+  saveLocked = true
+  
+  //10秒后自动关闭保存锁，避免出现异常时保存锁无法关闭
+  const timerId = setTimeout(() => {
+    if (saveLocked) saveLocked = false;
+    clearTimeout(timerId)
+    }, 10 * 1000)
+  
+  //开始保存笔记
   if (note.value.id) {
-    return updateNote(note.value, (result: Result<Note>) => {
-      if (result.status !== ResultStatus.SUCCESS) return
+    await updateNote(note.value, (result: Result<Note>) => {
+      elPrompt('保存成功！', "success")
+    })
+  } else {
+    await addNote(note.value, (result: Result<Note>) => {
+      note.value = result.data
       elPrompt('保存成功！', "success")
     })
   }
-  addNote(note.value, (result: Result<Note>) => {
-    note.value.id = result.data.id
-    elPrompt('保存成功！', "success")
-  })
+  
+  //关闭保存锁
+  saveLocked = false
 }
 
 /**

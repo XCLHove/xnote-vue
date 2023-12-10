@@ -1,14 +1,21 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {Result} from "../interfaces/Result.ts";
 import {useRoute} from "vue-router";
 import {pageNote} from "../api/NoteApi.ts";
 import {NotePageDTO} from "../interfaces/entity/dto/NotePageDTO.ts";
+import {debounce} from "../utils/debounce/debounce.ts";
 
-const searchText = ref<{ title: string, content: string, keywords: string }>({
+const searchText = ref({
   title: '',
   content: '',
   keywords: '',
+})
+
+
+watch(searchText.value, () => {
+  loading.value = true
+  debounceSearchNote()
 })
 
 const loading = ref(false)
@@ -22,6 +29,7 @@ function getRouterParam() {
   searchText.value.keywords = keywords ? keywords : ''
 }
 
+const debounceSearchNote = debounce(searchNote, 1.5)
 async function searchNote() {
   loading.value = true
   const notePageDTO: NotePageDTO = {

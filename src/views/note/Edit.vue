@@ -52,7 +52,8 @@ async function save() {
     })
   } else {
     await addNote(note.value, (result: Result<Note>) => {
-      note.value = result.data
+      note.value.title = result.data.title
+      note.value.id = result.data.id
       elPrompt('保存成功！', "success")
     })
   }

@@ -31,6 +31,7 @@ import '@kangc/v-md-editor/lib/style/preview.css';
 import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
 import '@kangc/v-md-editor/lib/theme/style/github.css';
 import hljs from 'highlight.js';
+
 //VMdEditor
 import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor.js';
 import '@kangc/v-md-editor/lib/style/codemirror-editor.css';
@@ -49,6 +50,7 @@ import 'codemirror/addon/scroll/simplescrollbars';
 import 'codemirror/addon/scroll/simplescrollbars.css';
 import 'codemirror/lib/codemirror.css';
 
+//VMdPreview
 VMdPreview.use(githubTheme, {Hljs: hljs});
 VMdPreview.use(createEmojiPlugin());
 VMdPreview.use(createTodoListPlugin());
@@ -57,6 +59,7 @@ VMdPreview.use(createTipPlugin());
 VMdPreview.use(createHighlightLinesPlugin());
 VMdPreview.use(createAlignPlugin());
 
+//VMdEditor
 VMdEditor.Codemirror = Codemirror;
 VMdEditor.use(githubTheme, {Hljs: hljs,});
 VMdEditor.use(createEmojiPlugin());

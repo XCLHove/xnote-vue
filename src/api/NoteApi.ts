@@ -5,10 +5,18 @@ import {NotePageDTO} from "../interfaces/entity/dto/NotePageDTO.ts";
 /**
  * 获取一篇笔记
  * @param noteId 笔记id
+ * @param accessCode 访问码
  * @param callback 回调函数
  */
-export async function getONoteById(noteId: number, callback: Function) {
-    await request.get(`/notes/${noteId}`).then((result) => {
+export async function getNoteById(noteId: number, accessCode = '', callback: Function) {
+    await request.get(`/notes/${noteId}`, {
+        params: {
+            accessCode: accessCode,
+        }
+    }).then((result) => {
+        if (result?.data) {
+            result.data.keywords ||= []
+        }
         callback(result)
     })
 }
@@ -53,6 +61,17 @@ export async function deleteNoteById(noteId: number, callback: Function) {
  */
 export async function pageNote(notePageDTO: NotePageDTO, callback: Function) {
     await request.post('/notes/page', notePageDTO).then(result => {
+        if (callback) callback(result)
+    })
+}
+
+/**
+ * 分页获取自己的笔记
+ * @param notePageDTO 分页数据
+ * @param callback 回调函数
+ */
+export async function pageSelfNote(notePageDTO: NotePageDTO, callback: Function) {
+    await request.post('/notes/page/me', notePageDTO).then(result => {
         if (callback) callback(result)
     })
 }

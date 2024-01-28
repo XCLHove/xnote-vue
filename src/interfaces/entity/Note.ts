@@ -1,9 +1,11 @@
-import Keyword from "../../classes/Keyword.ts";
+import NoteIsPublic from "../../enums/NoteIsPublic.ts";
 
 export interface Note {
-    id: number,
+    id?: number,
     title: string,
     content: string,
-    keywords: Keyword[],
-    userId: number
+    keywords: string[],
+    userId?: number,
+    isPublic: NoteIsPublic,
+    accessCode?: string,
 }

@@ -1,140 +1,246 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onUnmounted, ref} from "vue";
+import {listenMessage} from "../../utils/crossTagMessage.ts";
+import CrossTagMessageKey from "../../enums/CrossTagMessageKey.ts";
 import {FormInstance, FormRules} from "element-plus";
 import {UserDTO} from "../../interfaces/entity/dto/UserDTO.ts";
-import {userRegister} from "../../api/UserApi.ts";
+import {sendVerificationCode, userRegister} from "../../api/UserApi.ts";
 import {Result} from "../../interfaces/Result.ts";
 import {User} from "../../interfaces/entity/User.ts";
-import router from "../../router/router.ts";
 import {elPrompt} from "../../utils/elPrompt.ts";
+import {showUserLogin} from "../../utils/showLogin.ts";
+
+const showRegister = ref(false)
+
+const removeListener = listenMessage(CrossTagMessageKey.SHOW_USER_Register, (value) => {
+    showRegister.value = value
+}, false)
+onUnmounted(() => {
+    removeListener()
+})
 
 const registerFormRef = ref<FormInstance>()
 const registerForm = ref<UserDTO>({
-  name: '',
-  account: '',
-  password: '',
-  password2: '',
-  email: ''
+    name: '',
+    account: '',
+    password: '',
+    password2: '',
+    email: '',
+    verificationCode: '',
 })
 const rules = ref<FormRules<UserDTO>>({
-  name: [
-    {
-      validator: (rule: any, value: string, callback: Function) => {
-        rule = rule
-        let pattern = /^\w{2,30}$/g
-        if (!pattern.test(value)) callback(new Error())
-        return true
-      },
-      message: '2-30位的数字、字母或下划线',
-      trigger: 'blur'
-    },
-  ],
-  account: [
-    {
-      validator: (rule: any, value: string, callback: Function) => {
-        rule = rule
-        let pattern = /^\w{6,30}$/g
-        if (!pattern.test(value)) callback(new Error())
-        return true
-      },
-      message: '6-30位的数字、字母或下划线',
-      trigger: 'blur'
-    },
-  ],
-  password: [
-    {
-      validator: (rule: any, value: string, callback: Function) => {
-        rule = rule
-        let pattern = /^[\w\.\*]{6,30}$/g
-        if (!pattern.test(value)) callback(new Error())
-        return true
-      },
-      message: '6-30位的数字、字母、下划线、"."或"*"',
-      trigger: 'blur'
-    },
-  ],
-  password2: [
-    {
-      validator: (rule: any, value: string, callback: Function) => {
-        rule = rule
-        if (value !== registerForm.value.password) callback(new Error())
-        return true
-      },
-      message: '密码和确认密码不一致',
-      trigger: 'blur'
-    },
-  ],
-  email: [
-    {
-      validator: (rule: any, value: string, callback: Function) => {
-        rule = rule
-        let pattern = /^[\w-]+@((\w+)\.)+([a-zA-Z]{2,4})$/g
-        if (!pattern.test(value)) callback(new Error())
-        return true
-      },
-      message: '邮箱格式错误',
-      trigger: 'blur'
-    },
-  ],
+    name: [
+        {
+            validator: (rule: any, value: string, callback: Function) => {
+                let pattern = /^\w{2,30}$/g
+                if (!pattern.test(value)) callback(new Error())
+                return true
+            },
+            message: '2-30位的数字、字母或下划线',
+            trigger: 'blur'
+        },
+    ],
+    account: [
+        {
+            validator: (rule: any, value: string, callback: Function) => {
+                let pattern = /^\w{6,30}$/g
+                if (!pattern.test(value)) callback(new Error())
+                return true
+            },
+            message: '6-30位的数字、字母或下划线',
+            trigger: 'blur'
+        },
+    ],
+    password: [
+        {
+            validator: (rule: any, value: string, callback: Function) => {
+                
+                let pattern = /^[\w\.\*]{6,30}$/g
+                if (!pattern.test(value)) callback(new Error())
+                return true
+            },
+            message: '6-30位的数字、字母、下划线、"."或"*"',
+            trigger: 'blur'
+        },
+    ],
+    password2: [
+        {
+            validator: (rule: any, value: string, callback: Function) => {
+                
+                if (value !== registerForm.value.password) callback(new Error())
+                return true
+            },
+            message: '密码和确认密码不一致',
+            trigger: 'blur'
+        },
+    ],
+    email: [
+        {
+            validator: (rule: any, value: string, callback: Function) => {
+                let pattern = /^[\w-]+@((\w+)\.)+([a-zA-Z]{2,4})$/g
+                const isValidate = pattern.test(value)
+                
+                disableSend.value = !isValidate
+                
+                if (!isValidate) {
+                    callback(new Error())
+                    return
+                }
+                callback()
+            },
+            message: '邮箱格式错误',
+            trigger: 'blur'
+        },
+    ],
+    verificationCode: [
+        {
+            validator: (rule: any, value: string, callback: Function) => {
+                const pattern = /^[a-zA-Z0-9]{4}$/g
+                if (!pattern.test(value)) callback(new Error())
+                callback()
+            },
+            message: '验证码格式错误',
+            trigger: 'blur'
+        },
+    ],
 })
 
-function submitForm(formEl: FormInstance | undefined) {
-  if (!formEl) return
-  formEl.validate((valid) => {
-    if (!valid) return
-    userRegister(registerForm.value, (result: Result<User>) => {
-      if (result.status !== 200) return
-      elPrompt('注册成功！', 'success')
-      router.push('/login/user')
+/**
+ * 提交表单
+ */
+const submitForm = () => {
+    console.log(registerFormRef.value)
+    registerFormRef.value?.validate((valid) => {
+        if (!valid) return
+        userRegister(registerForm.value, (result: Result<User>) => {
+            if (result.status !== 200) return
+            elPrompt.success('注册成功！')
+            showRegister.value = false
+            registerFormRef.value?.resetFields()
+            showUserLogin()
+        })
     })
-  })
 }
-function resetForm (formEl: FormInstance | undefined)  {
-  if (!formEl) return
-  formEl.resetFields()
+
+/**
+ * 重置表单
+ */
+const resetForm = () => {
+    registerFormRef.value?.resetFields()
+    sendStatus.value = getSendStatus().unSend
+}
+
+const seconds = ref(60)
+const disableSend = ref(true)
+const getSendStatus = () => {
+    return {
+        unSend: 0,
+        sending: 1,
+        success: 2,
+        failed: 3,
+    }
+}
+const sendStatus = ref(getSendStatus().unSend)
+/**
+ * 发送验证码
+ */
+const send = () => {
+    sendStatus.value = getSendStatus().sending
+    
+    sendVerificationCode(registerForm.value.email, (result: Result<any>) => {
+        seconds.value = 60
+        sendStatus.value = getSendStatus().success
+        const secondsInterval = setInterval(() => {
+            seconds.value--;
+            
+            if (seconds.value === 0) {
+                clearInterval(secondsInterval)
+                sendStatus.value = getSendStatus().unSend
+            }
+        }, 1000)
+        
+        elPrompt.success(result.message)
+    }, () => {
+        sendStatus.value = getSendStatus().failed
+    })
 }
 </script>
 
 <template>
-  <div class="register">
-    <h1>注册</h1>
-    <el-form ref="registerFormRef" :model="registerForm" :rules="rules" label-width="120px" status-icon>
-      <el-form-item label="用户名" label-width="70px" label-position="left" prop="name">
-        <el-input v-model.trim="registerForm.name"/>
-      </el-form-item>
-      <el-form-item label="账号" label-width="70px" label-position="left" prop="account">
-        <el-input v-model.trim="registerForm.account"/>
-      </el-form-item>
-      <el-form-item label="密码" label-width="70px" prop="password">
-        <el-input type="password" v-model.trim="registerForm.password"/>
-      </el-form-item>
-      <el-form-item label="确认密码" label-width="70px" prop="password2">
-        <el-input type="password" v-model.trim="registerForm.password2"/>
-      </el-form-item>
-      <el-form-item label="邮箱" label-width="70px" prop="email">
-        <el-input v-model.trim="registerForm.email"/>
-      </el-form-item>
-      <el-button type="danger" @click="resetForm(registerFormRef)">重置</el-button>
-      <el-button type="primary" @click="submitForm(registerFormRef)">注册</el-button>
-    </el-form>
-  </div>
+    <div class="container">
+        <el-dialog
+            v-model="showRegister"
+            title="用户注册"
+            :center="true"
+            width="350"
+            top="25vh"
+        >
+            <el-form ref="registerFormRef"
+                     :model="registerForm"
+                     :rules="rules"
+                     label-position="left"
+                     label-width="70px"
+                     status-icon
+            >
+                <el-form-item label="用户名" prop="name">
+                    <el-input v-model.trim="registerForm.name"/>
+                </el-form-item>
+                <el-form-item label="账号" prop="account">
+                    <el-input v-model.trim="registerForm.account"/>
+                </el-form-item>
+                <el-form-item label="密码" prop="password">
+                    <el-input type="password" v-model.trim="registerForm.password"/>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="password2">
+                    <el-input type="password" v-model.trim="registerForm.password2"/>
+                </el-form-item>
+                <el-form-item label="邮箱" prop="email">
+                    <el-input v-model.trim="registerForm.email"/>
+                </el-form-item>
+                <el-form-item label="验证码" prop="verificationCode">
+                    <div class="verification-code">
+                        <el-input v-model.trim="registerForm.verificationCode"/>
+                        <el-button :disabled="disableSend" :type="disableSend ? 'info' : ''" v-show="sendStatus === getSendStatus().unSend" @click="send">发送验证码</el-button>
+                        <el-button disabled v-show="sendStatus === getSendStatus().sending">发送中……</el-button>
+                        <el-button disabled type="success" v-show="sendStatus === getSendStatus().success">{{ seconds }} S</el-button>
+                        <el-button :disabled="disableSend" type="danger" v-show="sendStatus === getSendStatus().failed" @click="send">发送失败</el-button>
+                    </div>
+                </el-form-item>
+                <div class="operation">
+                    <el-button type="danger" @click="resetForm">重置</el-button>
+                    <el-button type="primary" @click="submitForm">注册</el-button>
+                </div>
+            </el-form>
+        </el-dialog>
+    </div>
 </template>
 
 <style scoped lang="less">
-.register {
-  h1 {
-    text-align: center;
-  }
+@import "../../assets/styles/flex";
 
-  .el-form {
-    .el-form-item__label {
-      width: 100px;
-      padding: 0;
+.container {
+    .el-form {
+        .verification-code {
+            .flex;
+            
+            .el-button {
+                margin-left: 10px;
+                width: 150px;
+            }
+        }
+        
+        .operation {
+            .flex;
+            
+            .el-button {
+                width: 50%;
+                margin: 0;
+                
+                &:nth-child(1) {
+                    margin-right: 10px;
+                }
+            }
+        }
     }
-    .el-button {
-      width: 50%;
-      margin: 0;
-    }
-  }
 }
 </style>

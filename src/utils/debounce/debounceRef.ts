@@ -7,7 +7,7 @@ import {customRef} from "vue";
  * @param delaySecond 延迟秒数，默认1s
  */
 export function debounceRef(value: any, delaySecond = 1) {
-    let timerId: number;
+    let timerId: NodeJS.Timeout;
     return customRef((track, trigger) => {
         return {
             get() {

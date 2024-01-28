@@ -3,5 +3,6 @@ export interface UserDTO {
     account:string,
     email: string,
     password: string,
-    password2:string
+    password2:string,
+    verificationCode: string,
 }

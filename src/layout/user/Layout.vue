@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Icp from "../Icp.vue";
+import Icp from "../Footer.vue";
 import { computed, onMounted, Ref, ref } from "vue";
 import { User } from "../../interfaces/entity/User.ts";
 import { getUserSelf, userLogout } from "../../api/UserApi.ts";

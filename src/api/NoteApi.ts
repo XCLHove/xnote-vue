@@ -1,6 +1,6 @@
 import request from "../utils/request.ts";
-import {Note} from "../interfaces/entity/Note.ts";
-import {NotePageDTO} from "../interfaces/entity/dto/NotePageDTO.ts";
+import { Note } from "../interfaces/entity/Note.ts";
+import { NotePageDTO } from "../interfaces/entity/dto/NotePageDTO.ts";
 
 /**
  * 获取一篇笔记
@@ -8,17 +8,23 @@ import {NotePageDTO} from "../interfaces/entity/dto/NotePageDTO.ts";
  * @param accessCode 访问码
  * @param callback 回调函数
  */
-export async function getNoteById(noteId: number, accessCode = '', callback: Function) {
-    await request.get(`/notes/${noteId}`, {
-        params: {
-            accessCode: accessCode,
-        }
-    }).then((result) => {
-        if (result?.data) {
-            result.data.keywords ||= []
-        }
-        callback(result)
-    })
+export async function getNoteById(
+    noteId: number,
+    accessCode = "",
+    callback: Function,
+) {
+    await request
+        .get(`/notes/${noteId}`, {
+            params: {
+                accessCode: accessCode,
+            },
+        })
+        .then((result) => {
+            if (result?.data) {
+                result.data.keywords ||= [];
+            }
+            callback(result);
+        });
 }
 
 /**
@@ -27,9 +33,9 @@ export async function getNoteById(noteId: number, accessCode = '', callback: Fun
  * @param callback 回调函数
  */
 export async function updateNote(note: Note, callback: Function) {
-    await request.post('/notes', note).then((result) => {
-        callback(result)
-    })
+    await request.post("/notes", note).then((result) => {
+        callback(result);
+    });
 }
 
 /**
@@ -38,9 +44,9 @@ export async function updateNote(note: Note, callback: Function) {
  * @param callback 回调函数
  */
 export async function addNote(note: Note, callback: Function) {
-    await request.put('/notes', note).then((result) => {
-        callback(result)
-    })
+    await request.put("/notes", note).then((result) => {
+        callback(result);
+    });
 }
 
 /**
@@ -50,8 +56,8 @@ export async function addNote(note: Note, callback: Function) {
  */
 export async function deleteNoteById(noteId: number, callback: Function) {
     await request.delete(`/notes/${noteId}`).then((result) => {
-        callback(result)
-    })
+        callback(result);
+    });
 }
 
 /**
@@ -60,9 +66,9 @@ export async function deleteNoteById(noteId: number, callback: Function) {
  * @param callback 回调函数
  */
 export async function pageNote(notePageDTO: NotePageDTO, callback: Function) {
-    await request.post('/notes/page', notePageDTO).then(result => {
-        if (callback) callback(result)
-    })
+    await request.post("/notes/page", notePageDTO).then((result) => {
+        if (callback) callback(result);
+    });
 }
 
 /**
@@ -70,8 +76,11 @@ export async function pageNote(notePageDTO: NotePageDTO, callback: Function) {
  * @param notePageDTO 分页数据
  * @param callback 回调函数
  */
-export async function pageSelfNote(notePageDTO: NotePageDTO, callback: Function) {
-    await request.post('/notes/page/me', notePageDTO).then(result => {
-        if (callback) callback(result)
-    })
+export async function pageSelfNote(
+    notePageDTO: NotePageDTO,
+    callback: Function,
+) {
+    await request.post("/notes/page/me", notePageDTO).then((result) => {
+        if (callback) callback(result);
+    });
 }

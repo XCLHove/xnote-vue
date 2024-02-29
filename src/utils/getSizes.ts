@@ -1,8 +1,8 @@
 export const getSizes = (total: number, minSize?: number, maxSize?: number) => {
     if (!minSize) minSize = 10;
     if (!maxSize) maxSize = 200;
-    maxSize = Math.min(maxSize, total)
-    
+    maxSize = Math.min(maxSize, total);
+
     let currentSize = minSize;
     const sizes: number[] = [];
     while (currentSize < maxSize) {
@@ -11,4 +11,4 @@ export const getSizes = (total: number, minSize?: number, maxSize?: number) => {
     }
     sizes.push(Math.min(currentSize, maxSize));
     return [...new Set(sizes)];
-}
+};

@@ -6,15 +6,15 @@ import Layout from "../layout/user/Layout.vue";
 
 const routes = [
     {
-        path: '/',
+        path: "/",
         component: Layout,
         children: [
-            { path: '/', component: Home },
-            { path: '/preview/:noteId(\\d+)', component: Preview },
-            { path: '/edit', component: Edit },
-            { path: '/edit/:noteId(\\d+)', component: Edit },
-            { path: '/notes/user', component: UserNotes },
-        ]
-    }
-]
-export default routes
+            { path: "/", component: Home },
+            { path: "/preview/:noteId(\\d+)", component: Preview },
+            { path: "/edit", component: Edit },
+            { path: "/edit/:noteId(\\d+)", component: Edit },
+            { path: "/notes/user", component: UserNotes },
+        ],
+    },
+];
+export default routes;

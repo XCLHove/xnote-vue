@@ -13,6 +13,7 @@
 5. MinIO
 
 ## git仓库
-- 前端：[xnote-vue(github)](https://github.com/XCLHove/xnote-vue) | [xnote-vue(gitee)](https://gitee.com/xclhove/xnote-vue)
 
-- 后端：[xnote-springboot(github)](https://github.com/XCLHove/xnote-springboot) | [xnote-springboot(gitee)](https://gitee.com/xclhove/xnote-springboot)
+-   前端：[xnote-vue(github)](https://github.com/XCLHove/xnote-vue) | [xnote-vue(gitee)](https://gitee.com/xclhove/xnote-vue)
+
+-   后端：[xnote-springboot(github)](https://github.com/XCLHove/xnote-springboot) | [xnote-springboot(gitee)](https://gitee.com/xclhove/xnote-springboot)

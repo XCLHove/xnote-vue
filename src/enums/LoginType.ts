@@ -1,5 +1,5 @@
 enum LoginType {
-    User = 'user',
-    ADMIN = 'admin'
+    User = "user",
+    ADMIN = "admin",
 }
-export default LoginType
+export default LoginType;

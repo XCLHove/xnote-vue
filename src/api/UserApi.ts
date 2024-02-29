@@ -1,5 +1,5 @@
 import request from "../utils/request.ts";
-import {UserDTO} from "../interfaces/entity/dto/UserDTO.ts";
+import { UserDTO } from "../interfaces/entity/dto/UserDTO.ts";
 
 /**
  * 用户登录
@@ -7,15 +7,21 @@ import {UserDTO} from "../interfaces/entity/dto/UserDTO.ts";
  * @param password 密码
  * @param callback 回调函数
  */
-export async function userLogin(account: string, password: string, callback: Function) {
-    await request.get('/users/login', {
-        params: {
-            account: account,
-            password: password
-        }
-    }).then((result) => {
-        callback(result)
-    })
+export async function userLogin(
+    account: string,
+    password: string,
+    callback: Function,
+) {
+    await request
+        .get("/users/login", {
+            params: {
+                account: account,
+                password: password,
+            },
+        })
+        .then((result) => {
+            callback(result);
+        });
 }
 
 /**
@@ -23,9 +29,9 @@ export async function userLogin(account: string, password: string, callback: Fun
  * @param callback
  */
 export async function userLogout(callback: Function) {
-    await request.post('/users/logout').then(result => {
-        callback(result)
-    })
+    await request.post("/users/logout").then((result) => {
+        callback(result);
+    });
 }
 
 /**
@@ -34,9 +40,9 @@ export async function userLogout(callback: Function) {
  * @param callback 回调函数
  */
 export async function userRegister(registerForm: UserDTO, callback: Function) {
-    await request.put('/users/register', registerForm).then(result => {
-        if (callback) callback(result)
-    })
+    await request.put("/users/register", registerForm).then((result) => {
+        if (callback) callback(result);
+    });
 }
 
 /**
@@ -44,9 +50,9 @@ export async function userRegister(registerForm: UserDTO, callback: Function) {
  * @param callback 回调函数
  */
 export async function getUserSelf(callback: Function) {
-    await request.get('/users/self').then((result) => {
-        if (callback) callback(result)
-    })
+    await request.get("/users/self").then((result) => {
+        if (callback) callback(result);
+    });
 }
 
 /**
@@ -55,14 +61,21 @@ export async function getUserSelf(callback: Function) {
  * @param callback 回调函数
  * @param errorCallback 错误回调函数
  */
-export async function sendVerificationCode(email: string, callback: Function, errorCallback?: Function) {
-    await request.get('/users/verificationCode', {
-        params: {
-            email: email
-        }
-    }).then((result) => {
-        callback(result)
-    }).catch((error: any) => {
-        errorCallback?.(error)
-    })
+export async function sendVerificationCode(
+    email: string,
+    callback: Function,
+    errorCallback?: Function,
+) {
+    await request
+        .get("/users/verificationCode", {
+            params: {
+                email: email,
+            },
+        })
+        .then((result) => {
+            callback(result);
+        })
+        .catch((error: any) => {
+            errorCallback?.(error);
+        });
 }

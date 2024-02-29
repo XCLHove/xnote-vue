@@ -7,6 +7,6 @@ enum ResultStatus {
     USER_TOKEN_EXCEPTION = 601,
     NOTE_SERVICE_EXCEPTION = 700,
     ADMIN_SERVICE_EXCEPTION = 800,
-    ADMIN_TOKEN_EXCEPTION = 801
+    ADMIN_TOKEN_EXCEPTION = 801,
 }
-export default ResultStatus
+export default ResultStatus;

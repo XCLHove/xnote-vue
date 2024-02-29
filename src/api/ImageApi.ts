@@ -7,12 +7,12 @@ import request from "../utils/request.ts";
  */
 export async function uploadImage(uploadImage: File, callback: Function) {
     const formData = new FormData();
-    formData.append('uploadImage', uploadImage)
-    await request.put(
-        '/image',
-        formData,
-        {headers: {'Content-Type': 'multipart/form-data'}}
-    ).then((result) => {
-        callback(result)
-    })
+    formData.append("uploadImage", uploadImage);
+    await request
+        .put("/image", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((result) => {
+            callback(result);
+        });
 }

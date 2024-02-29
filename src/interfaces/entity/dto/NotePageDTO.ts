@@ -1,5 +1,5 @@
-import {PageDTO} from "./PageDTO.ts";
-import {Note} from "../Note.ts";
+import { PageDTO } from "./PageDTO.ts";
+import { Note } from "../Note.ts";
 
 /**
  * Note分页数据

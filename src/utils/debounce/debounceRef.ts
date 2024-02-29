@@ -1,5 +1,4 @@
-import {customRef} from "vue";
-
+import { customRef } from "vue";
 
 /**
  * 防抖ref
@@ -18,9 +17,9 @@ export function debounceRef(value: any, delaySecond = 1) {
                 clearTimeout(timerId);
                 timerId = setTimeout(() => {
                     trigger();
-                    value = val
+                    value = val;
                 }, delaySecond * 1000);
-            }
-        }
+            },
+        };
     });
 }

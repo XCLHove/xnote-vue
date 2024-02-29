@@ -1,4 +1,4 @@
 enum RequestHeaderKey {
-    TOKEN = 'token',
+    TOKEN = "token",
 }
 export default RequestHeaderKey;

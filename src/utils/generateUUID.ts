@@ -5,7 +5,9 @@ export default function generateUUID() {
         cryptoObj.getRandomValues(uuid);
         uuid[6] = (uuid[6] & 0x0f) | 0x40; // Version 4
         uuid[8] = (uuid[8] & 0x3f) | 0x80; // Variant 1 (10*)
-        return Array.from(uuid, byte => byte.toString(16).padStart(2, '0')).join('');
+        return Array.from(uuid, (byte) =>
+            byte.toString(16).padStart(2, "0"),
+        ).join("");
     } else {
         // 如果不支持 crypto.getRandomValues，则退回到简单的生成方法
         return generateFallbackUUID();

@@ -6,10 +6,10 @@
  */
 export function debounce<A extends any[], R>(
     fun: (...args: A) => R,
-    delaySecond = 1
+    delaySecond = 1,
 ): (...args: A) => void {
     let timeoutId: NodeJS.Timeout;
-    return function(...args: A) {
+    return function (...args: A) {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
             fun(...args);

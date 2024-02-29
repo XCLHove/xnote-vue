@@ -1,8 +1,8 @@
 import generateUUID from "./generateUUID.ts";
 
-export const newSetItemEventType = 'newSetItemEvent'
+export const newSetItemEventType = "newSetItemEvent";
 
-const identifier = '@@'
+const identifier = "@@";
 
 export interface NewSetItemEvent extends Event {
     key: string;
@@ -15,10 +15,13 @@ export interface NewSetItemEvent extends Event {
  * @param value{any} 数据
  */
 export function sendMessage(name: string, value: any) {
-    localStorage.setItem(`${identifier}${name}`, JSON.stringify({
-        data: value,
-        temp: generateUUID()
-    }))
+    localStorage.setItem(
+        `${identifier}${name}`,
+        JSON.stringify({
+            data: value,
+            temp: generateUUID(),
+        }),
+    );
 }
 
 /**
@@ -28,24 +31,28 @@ export function sendMessage(name: string, value: any) {
  * @param autoRemove 是否自动移除监听的值，默认为true
  * @return {Function} 返回一个移除监听的函数
  */
-export function listenMessage(name: string, callback: (value: any) => void, autoRemove = true) {
-    changeLocalStorageSetItem()
-    
+export function listenMessage(
+    name: string,
+    callback: (value: any) => void,
+    autoRemove = true,
+) {
+    changeLocalStorageSetItem();
+
     const handler = (event: any) => {
-        const eventKey = event.key
+        const eventKey = event.key;
         if (!eventKey.startsWith(identifier)) return;
         if (eventKey.substring(2) !== name) return;
-        const newValue = JSON.parse(event.newValue)
-        if (newValue === null || newValue === '') return;
-        callback(newValue.data)
-        if (autoRemove) localStorage.removeItem(`${identifier}${name}`)
-    }
-    
-    window.addEventListener(newSetItemEventType, handler)
-    
+        const newValue = JSON.parse(event.newValue);
+        if (newValue === null || newValue === "") return;
+        callback(newValue.data);
+        if (autoRemove) localStorage.removeItem(`${identifier}${name}`);
+    };
+
+    window.addEventListener(newSetItemEventType, handler);
+
     return () => {
-        window.removeEventListener(newSetItemEventType, handler)
-    }
+        window.removeEventListener(newSetItemEventType, handler);
+    };
 }
 
 /**
@@ -53,14 +60,16 @@ export function listenMessage(name: string, callback: (value: any) => void, auto
  */
 function changeLocalStorageSetItem() {
     const originSetItem = window.localStorage.setItem;
-    window.localStorage.setItem = function(key: string, newValue: string){
-        const newSetItemEvent:NewSetItemEvent = new Event(newSetItemEventType) as NewSetItemEvent;
-        
+    window.localStorage.setItem = function (key: string, newValue: string) {
+        const newSetItemEvent: NewSetItemEvent = new Event(
+            newSetItemEventType,
+        ) as NewSetItemEvent;
+
         newSetItemEvent.key = key;
         newSetItemEvent.newValue = newValue;
-        
+
         // 抛出自定义事件
         window.dispatchEvent(newSetItemEvent);
         originSetItem.apply(this, [key, newValue]);
-    }
+    };
 }

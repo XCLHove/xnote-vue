@@ -292,6 +292,8 @@ const validateAccessCode = () => {
 @import "../../assets/styles/flex";
 
 .edit {
+    width: 100%;
+
     .edit-item {
         .flex;
         margin: 10px 0;

@@ -237,7 +237,7 @@ onUnmounted(() => {
     }
 
     .page {
-        margin-top: auto;
+        margin-top: 5px;
     }
 }
 </style>

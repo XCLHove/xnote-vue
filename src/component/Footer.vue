@@ -44,6 +44,14 @@ onMounted(() => {
     padding: 5px 0;
     background: white;
     z-index: 999;
+    border-top: 1px solid var(--color-lightGray);
+
+    @media screen and (max-width: 600px) {
+        & {
+            font-size: 10px;
+        }
+    }
+
     span > a {
         text-decoration: none;
         font-weight: bold;

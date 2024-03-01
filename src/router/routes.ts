@@ -2,12 +2,12 @@ import Home from "../views/Home.vue";
 import Preview from "../views/note/Preview.vue";
 import Edit from "../views/note/Edit.vue";
 import UserNotes from "../views/note/UserNotes.vue";
-import Layout from "../layout/user/Layout.vue";
+import UserLayout from "../layout/UserLayout.vue";
 
 const routes = [
     {
         path: "/",
-        component: Layout,
+        component: UserLayout,
         children: [
             { path: "/", component: Home },
             { path: "/preview/:noteId(\\d+)", component: Preview },

@@ -12,5 +12,6 @@ declare module "@kangc/v-md-editor/lib/plugins/align";
 declare module "codemirror";
 
 declare module "vite-plugin-top-level-await";
+declare module "vite-plugin-compression";
 
 declare module "element-plus/dist/locale/zh-cn.mjs";

@@ -1,19 +1,22 @@
-import Home from "../views/Home.vue";
-import Preview from "../views/note/Preview.vue";
-import Edit from "../views/note/Edit.vue";
-import UserNotes from "../views/note/UserNotes.vue";
-import UserLayout from "../layout/UserLayout.vue";
-
 const routes = [
     {
         path: "/",
-        component: UserLayout,
+        component: () => import("@/layout/UserLayout.vue"),
         children: [
-            { path: "/", component: Home },
-            { path: "/preview/:noteId(\\d+)", component: Preview },
-            { path: "/edit", component: Edit },
-            { path: "/edit/:noteId(\\d+)", component: Edit },
-            { path: "/notes/user", component: UserNotes },
+            { path: "/", component: () => import("@/views/Home.vue") },
+            {
+                path: "/preview/:noteId(\\d+)",
+                component: () => import("@/views/note/Preview.vue"),
+            },
+            { path: "/edit", component: () => import("@/views/note/Edit.vue") },
+            {
+                path: "/edit/:noteId(\\d+)",
+                component: () => import("@/views/note/Edit.vue"),
+            },
+            {
+                path: "/notes/user",
+                component: () => import("@/views/note/UserNotes.vue"),
+            },
         ],
     },
 ];

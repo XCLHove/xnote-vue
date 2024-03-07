@@ -112,10 +112,9 @@ const rules = ref<FormRules<UserDTO>>({
  * 提交表单
  */
 const submitForm = () => {
-    console.log(registerFormRef.value);
     registerFormRef.value?.validate((valid) => {
         if (!valid) return;
-        userRegister(registerForm.value, (result: Result<User>) => {
+        userRegister(registerForm.value).then((result: Result<User>) => {
             if (result.status !== 200) return;
             elPrompt.success("注册成功！");
             showRegister.value = false;
@@ -150,9 +149,8 @@ const sendStatus = ref(getSendStatus().unSend);
 const send = () => {
     sendStatus.value = getSendStatus().sending;
 
-    sendVerificationCode(
-        registerForm.value.email,
-        (result: Result<any>) => {
+    sendVerificationCode({ email: registerForm.value.email })
+        .then((result: Result<any>) => {
             seconds.value = 60;
             sendStatus.value = getSendStatus().success;
             const secondsInterval = setInterval(() => {
@@ -165,11 +163,10 @@ const send = () => {
             }, 1000);
 
             elPrompt.success(result.message);
-        },
-        () => {
+        })
+        .catch(() => {
             sendStatus.value = getSendStatus().failed;
-        },
-    );
+        });
 };
 </script>
 

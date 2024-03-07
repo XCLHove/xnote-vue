@@ -2,8 +2,7 @@
 import Icp from "../component/Footer.vue";
 import { computed, onMounted, Ref, ref } from "vue";
 import { User } from "../interfaces/entity/User.ts";
-import { getUserSelf, userLogout } from "../api/UserApi.ts";
-import { Result } from "../interfaces/Result.ts";
+import { getUserSelfInfo, userLogout } from "../api/UserApi.ts";
 import Login from "../views/user/Login.vue";
 import LocalStorageKey from "../enums/LocalStorageKey.ts";
 import { showUserLogin, showUserRegister } from "../utils/showLogin.ts";
@@ -26,7 +25,7 @@ const removeLoginListener = loginListener(() => {
 const getUserInfo = () => {
     const token = localStorage.getItem(LocalStorageKey.TOKEN);
     if (!token) return;
-    getUserSelf((result: Result<User>) => {
+    getUserSelfInfo().then((result) => {
         user.value = result.data;
         avatarContent.value = user.value.name?.charAt(0);
     });
@@ -37,7 +36,7 @@ const showLogin = computed(() => {
 });
 
 const logout = () => {
-    userLogout((result: Result<any>) => {
+    userLogout().then(() => {
         localStorage.removeItem(LocalStorageKey.TOKEN);
         user.value = null;
         avatarContent.value = "登录";

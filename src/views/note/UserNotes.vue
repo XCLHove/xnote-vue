@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, Ref, ref, watch } from "vue";
-import { Note } from "../../interfaces/entity/Note.ts";
+import { Note } from "@/interfaces/entity/Note.ts";
 import {
     deleteNoteById,
     getNoteById,
     pageSelfNote,
     updateNote,
-} from "../../api/NoteApi.ts";
-import { Result } from "../../interfaces/Result.ts";
-import router from "../../router/router.ts";
-import { elPrompt } from "../../utils/elPrompt.ts";
-import { NotePageDTO } from "../../interfaces/entity/dto/NotePageDTO.ts";
-import { debounce } from "../../utils/debounce/debounce.ts";
-import NoteIsPublic from "../../enums/NoteIsPublic.ts";
+} from "@/api/NoteApi.ts";
+import { Result } from "@/interfaces/Result.ts";
+import router from "@/router/router.ts";
+import { elPrompt } from "@/utils/elPrompt.ts";
+import { NotePageDTO } from "@/interfaces/entity/dto/NotePageDTO.ts";
+import { debounce } from "@/utils/debounce/debounce.ts";
+import NoteIsPublic from "@/enums/NoteIsPublic.ts";
 import { ElMessageBox } from "element-plus";
-import { getSizes } from "../../utils/getSizes.ts";
-import { loginListener } from "../../utils/loginListener.ts";
+import { getSizes } from "@/utils/getSizes.ts";
+import { loginListener } from "@/utils/loginListener.ts";
 
 const loading = ref(false);
 
@@ -90,7 +90,7 @@ async function searchNote() {
         current: page.value.current,
         size: page.value.size,
     };
-    await pageSelfNote(notePageDTO, (result: Result<NotePageDTO>) => {
+    await pageSelfNote(notePageDTO).then((result: Result<NotePageDTO>) => {
         page.value.total = result.data.total
             ? result.data.total
             : page.value.total;
@@ -104,7 +104,7 @@ async function searchNote() {
  * @param noteId 笔记id
  */
 function removeNote(noteId: number) {
-    deleteNoteById(noteId, (result: Result<number>) => {
+    deleteNoteById(noteId).then(() => {
         elPrompt.success("删除成功！");
         page.value.list = page.value.list.filter((note: Note) => {
             if (note.id !== noteId) return note;
@@ -131,7 +131,7 @@ const changeNotePublicStatus = (note: Note) => {
     // 改为公开
     if (newNote.isPublic === NoteIsPublic.NO) {
         newNote.isPublic = NoteIsPublic.YES;
-        updateNote(newNote, (result: Result<Note>) => {
+        updateNote(newNote).then((result: Result<Note>) => {
             elPrompt.success(result.message);
             note.isPublic = result.data.isPublic;
         });
@@ -143,9 +143,11 @@ const changeNotePublicStatus = (note: Note) => {
 
     // 判断是否有访问码，没有则需要设置
     if (!newNote.id) return;
-    getNoteById(newNote.id, "", (result: Result<Note>) => {
+    getNoteById({
+        noteId: newNote.id,
+    }).then((result: Result<Note>) => {
         if (result.data.accessCode) {
-            updateNote(newNote, (result: Result<Note>) => {
+            updateNote(newNote).then((result: Result<Note>) => {
                 elPrompt.success(result.message);
                 note.isPublic = result.data.isPublic;
             });
@@ -166,7 +168,7 @@ const changeNotePublicStatus = (note: Note) => {
             .then(({ value }) => {
                 // 确定
                 newNote.accessCode = value;
-                updateNote(newNote, (result: Result<Note>) => {
+                updateNote(newNote).then((result: Result<Note>) => {
                     elPrompt.success(result.message);
                     note.isPublic = result.data.isPublic;
                 });

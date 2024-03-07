@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { listenMessage } from "../../utils/crossTagMessage.ts";
+import { listenMessage } from "@/utils/crossTagMessage.ts";
 import { onUnmounted, ref } from "vue";
-import { elPrompt } from "../../utils/elPrompt.ts";
-import { userLogin } from "../../api/UserApi.ts";
-import { Result } from "../../interfaces/Result.ts";
+import { elPrompt } from "@/utils/elPrompt.ts";
+import { userLogin } from "@/api/UserApi.ts";
 import { FormInstance, FormRules } from "element-plus";
-import LocalStorageKey from "../../enums/LocalStorageKey.ts";
-import CrossTagMessageKey from "../../enums/CrossTagMessageKey.ts";
-import { showUserRegister } from "../../utils/showLogin.ts";
+import LocalStorageKey from "@/enums/LocalStorageKey.ts";
+import CrossTagMessageKey from "@/enums/CrossTagMessageKey.ts";
+import { showUserRegister } from "@/utils/showLogin.ts";
 
 const showLogin = ref(false);
 
@@ -67,17 +66,16 @@ const login = () => {
     formRef.value?.validate((isValid: boolean) => {
         if (!isValid) return;
 
-        userLogin(
-            user.value.account,
-            user.value.password,
-            (result: Result<string>) => {
-                localStorage.setItem(LocalStorageKey.TOKEN, result.data);
-                elPrompt.success(result.message);
-                showLogin.value = false;
+        userLogin({
+            account: user.value.account,
+            password: user.value.password,
+        }).then((result) => {
+            localStorage.setItem(LocalStorageKey.TOKEN, result.data);
+            elPrompt.success(result.message);
+            showLogin.value = false;
 
-                formRef.value?.resetFields();
-            },
-        );
+            formRef.value?.resetFields();
+        });
     });
 };
 

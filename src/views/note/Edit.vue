@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, Ref, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { Note } from "../../interfaces/entity/Note.ts";
-import { addNote, getNoteById, updateNote } from "../../api/NoteApi.ts";
-import { Result } from "../../interfaces/Result.ts";
-import { elPrompt } from "../../utils/elPrompt.ts";
-import { uploadImage } from "../../api/ImageApi.ts";
-import { Image } from "../../interfaces/entity/Image.ts";
-import NoteIsPublic from "../../enums/NoteIsPublic.ts";
-import lock from "../../utils/lock.ts";
-import { Config, getConfig } from "../../utils/config.ts";
+import { Note } from "@/interfaces/entity/Note.ts";
+import { addNote, getNoteById, updateNote } from "@/api/NoteApi.ts";
+import { Result } from "@/interfaces/Result.ts";
+import { elPrompt } from "@/utils/elPrompt.ts";
+import { uploadImage } from "@/api/ImageApi.ts";
+import { Image } from "@/interfaces/entity/Image.ts";
+import NoteIsPublic from "@/enums/NoteIsPublic.ts";
+import lock from "@/utils/lock.ts";
+import { Config, getConfig } from "@/utils/config.ts";
 
 /**当前正在编辑的笔记*/
 const note: Ref<Note> = ref({
@@ -33,13 +33,12 @@ const getNote = () => {
     note.value.id = parseInt(noteIdStr);
 
     // 通过笔记id获取笔记
-    getNoteById(
-        note.value.id,
-        note.value.accessCode,
-        (result: Result<Note>) => {
-            note.value = result.data;
-        },
-    );
+    getNoteById({
+        noteId: note.value.id,
+        accessCode: note.value.accessCode,
+    }).then((result: Result<Note>) => {
+        note.value = result.data;
+    });
 };
 
 onMounted(() => {
@@ -55,12 +54,12 @@ async function save() {
 
     //开始保存笔记，id存在则为修改，不存在则为保存
     if (note.value.id) {
-        await updateNote(note.value, (result: Result<Note>) => {
+        await updateNote(note.value).then(() => {
             elPrompt.success("修改成功！");
             saveStatus.value = SaveStatus.saved;
         });
     } else {
-        await addNote(note.value, (result: Result<Note>) => {
+        await addNote(note.value).then((result: Result<Note>) => {
             note.value.id = result.data.id;
             note.value.title ||= result.data.title;
             elPrompt.success("保存成功！");
@@ -137,9 +136,8 @@ async function handleUploadImage(
     }
 
     let image: Image = {} as Image;
-    await uploadImage(imageFile, (result: Result<Image>) => {
-        image = result.data;
-    });
+    const result = await uploadImage(imageFile);
+    image = result.data;
 
     let serverUrl = "";
     await getConfig((config: Config) => {

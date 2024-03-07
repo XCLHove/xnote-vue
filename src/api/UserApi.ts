@@ -1,81 +1,100 @@
 import request from "../utils/request.ts";
 import { UserDTO } from "../interfaces/entity/dto/UserDTO.ts";
+import { Result } from "@/interfaces/Result.ts";
+import { User } from "@/interfaces/entity/User.ts";
 
 /**
- * 用户登录
- * @param account 账号
- * @param password 密码
- * @param callback 回调函数
+ * 用户登录函数
+ * @param {Object} userLoginInfo - 用户登录所需信息
+ * @param {string} userLoginInfo.account - 用户账号
+ * @param {string} userLoginInfo.password - 用户密码
  */
-export async function userLogin(
-    account: string,
-    password: string,
-    callback: Function,
-) {
-    await request
-        .get("/users/login", {
-            params: {
-                account: account,
-                password: password,
-            },
-        })
-        .then((result) => {
-            callback(result);
-        });
+export function userLogin({
+    account,
+    password,
+}: {
+    account: string;
+    password: string;
+}) {
+    return new Promise<Result<string>>((resolve, reject) => {
+        request
+            .get("/users/login", {
+                params: {
+                    account: account,
+                    password: password,
+                },
+            })
+            .then(({ data }) => {
+                resolve(data);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
 }
 
 /**
  * 用户退出登录
- * @param callback
  */
-export async function userLogout(callback: Function) {
-    await request.post("/users/logout").then((result) => {
-        callback(result);
+export function userLogout() {
+    return new Promise<Result<any>>((resolve, reject) => {
+        request
+            .post("/users/logout")
+            .then(({ data }) => {
+                resolve(data);
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 }
 
 /**
  * 用户注册
- * @param registerForm 用户注册信息
- * @param callback 回调函数
+ * @param {UserDTO} registerInfo - 用户注册所需信息
  */
-export async function userRegister(registerForm: UserDTO, callback: Function) {
-    await request.put("/users/register", registerForm).then((result) => {
-        if (callback) callback(result);
+export function userRegister(registerInfo: UserDTO) {
+    return new Promise<Result<any>>((resolve, reject) => {
+        request
+            .put("/users/register", registerInfo)
+            .then(({ data }) => {
+                resolve(data);
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 }
 
 /**
  * 获取用户自己的信息
- * @param callback 回调函数
  */
-export async function getUserSelf(callback: Function) {
-    await request.get("/users/self").then((result) => {
-        if (callback) callback(result);
+export function getUserSelfInfo() {
+    return new Promise<Result<User>>((resolve, reject) => {
+        request.get("/users/self").then(({ data }) => {
+            resolve(data);
+        });
     });
 }
 
 /**
  * 发送验证码
- * @param email 邮箱
- * @param callback 回调函数
- * @param errorCallback 错误回调函数
+ * @param {Object} object - 参数对象
+ * @param {string} object.email - 邮箱地址
  */
-export async function sendVerificationCode(
-    email: string,
-    callback: Function,
-    errorCallback?: Function,
-) {
-    await request
-        .get("/users/verificationCode", {
-            params: {
-                email: email,
-            },
-        })
-        .then((result) => {
-            callback(result);
-        })
-        .catch((error: any) => {
-            errorCallback?.(error);
-        });
+export function sendVerificationCode({ email }: { email: string }) {
+    return new Promise<Result<any>>((resolve, reject) => {
+        request
+            .get("/users/verificationCode", {
+                params: {
+                    email: email,
+                },
+            })
+            .then(({ data }) => {
+                resolve(data);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
 }

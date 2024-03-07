@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, Ref, ref, watch } from "vue";
-import { Result } from "../interfaces/Result.ts";
 import { useRoute } from "vue-router";
-import { pageNote } from "../api/NoteApi.ts";
-import { NotePageDTO } from "../interfaces/entity/dto/NotePageDTO.ts";
-import { debounce } from "../utils/debounce/debounce.ts";
-import lock from "../utils/lock.ts";
-import { elPrompt } from "../utils/elPrompt.ts";
-import NoteIsPublic from "../enums/NoteIsPublic.ts";
-import { getSizes } from "../utils/getSizes.ts";
-import { loginListener } from "../utils/loginListener.ts";
+import { pageNote } from "@/api/NoteApi.ts";
+import { debounce } from "@/utils/debounce/debounce.ts";
+import lock from "@/utils/lock.ts";
+import { elPrompt } from "@/utils/elPrompt.ts";
+import NoteIsPublic from "@/enums/NoteIsPublic.ts";
+import { getSizes } from "@/utils/getSizes.ts";
+import { loginListener } from "@/utils/loginListener.ts";
 
 // 搜索文本
 const searchText = ref({
@@ -63,19 +61,16 @@ async function searchNote() {
     // 显示加载动画
     loading.value = true;
 
-    await pageNote(
-        {
-            searchContent: searchText.value.content,
-            searchKeyword: searchText.value.keywords,
-            searchTitle: searchText.value.title,
-            current: page.value.current,
-            size: page.value.size,
-        },
-        (result: Result<NotePageDTO>) => {
-            page.value.total = result.data.total ? result.data.total : 0;
-            page.value.list = result.data.list ? result.data.list : [];
-        },
-    );
+    await pageNote({
+        searchContent: searchText.value.content,
+        searchKeyword: searchText.value.keywords,
+        searchTitle: searchText.value.title,
+        current: page.value.current,
+        size: page.value.size,
+    }).then((result) => {
+        page.value.total = result.data.total ? result.data.total : 0;
+        page.value.list = result.data.list ? result.data.list : [];
+    });
 
     // 关闭加载动画
     loading.value = false;

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from "vue";
 import { useRoute } from "vue-router";
-import { Note } from "../../interfaces/entity/Note.ts";
-import { getNoteById } from "../../api/NoteApi.ts";
-import { Result } from "../../interfaces/Result.ts";
-import { elPrompt } from "../../utils/elPrompt.ts";
-import NoteIsPublic from "../../enums/NoteIsPublic.ts";
+import { Note } from "@/interfaces/entity/Note.ts";
+import { getNoteById } from "@/api/NoteApi.ts";
+import { Result } from "@/interfaces/Result.ts";
+import { elPrompt } from "@/utils/elPrompt.ts";
+import NoteIsPublic from "@/enums/NoteIsPublic.ts";
 import { ElMessageBox } from "element-plus";
-import ResultStatus from "../../enums/ResultStatus.ts";
+import ResultStatus from "@/enums/ResultStatus.ts";
 
 const note: Ref<Note> = ref({
     content: "",
@@ -23,18 +23,17 @@ const getNote = () => {
         elPrompt.error("获取笔记id失败！");
         return;
     }
-    getNoteById(
-        note.value.id,
-        note.value.accessCode,
-        (result: Result<Note>) => {
-            if (result.status === ResultStatus.NOTE_ACCESS_CODE_EXCEPTION) {
-                // 访问码错误
-                inputAccessCode();
-                return;
-            }
-            note.value = result.data;
-        },
-    );
+    getNoteById({
+        noteId: note.value.id,
+        accessCode: note.value.accessCode,
+    }).then((result: Result<Note>) => {
+        if (result.status === ResultStatus.NOTE_ACCESS_CODE_EXCEPTION) {
+            // 访问码错误
+            inputAccessCode();
+            return;
+        }
+        note.value = result.data;
+    });
 };
 
 /**

@@ -1,18 +1,24 @@
 import request from "../utils/request.ts";
+import { Result } from "@/interfaces/Result.ts";
+import { Image } from "@/interfaces/entity/Image.ts";
 
 /**
  * 上传图片
- * @param uploadImage 图片file对象
- * @param callback 回调函数
+ * @param imageFile 图片file对象
  */
-export async function uploadImage(uploadImage: File, callback: Function) {
+export function uploadImage(imageFile: File) {
     const formData = new FormData();
-    formData.append("uploadImage", uploadImage);
-    await request
-        .put("/image", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-        })
-        .then((result) => {
-            callback(result);
-        });
+    formData.append("uploadImage", imageFile);
+    return new Promise<Result<Image>>((resolve, reject) => {
+        request
+            .put("/image", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            })
+            .then(({ data }) => {
+                resolve(data);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
 }

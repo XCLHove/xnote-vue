@@ -5,7 +5,8 @@ import ResultStatus from "../enums/ResultStatus.ts";
 import LocalStorageKey from "../enums/LocalStorageKey.ts";
 import RequestHeaderKey from "../enums/RequestHeaderKey.ts";
 import { Config, getConfig } from "./config.ts";
-import { showUserLogin } from "./showLogin.ts";
+import serviceExceptionHandler from "@/utils/serviceExceptionHandler.ts";
+import { Result } from "@/interfaces/Result.ts";
 
 //读取外部配置文件中的后端地址
 let baseURL = "http://localhsot:8080";
@@ -38,37 +39,35 @@ request.interceptors.request.use(
 // response 拦截器，可以在接口响应后统一处理结果
 request.interceptors.response.use(
     (response) => {
-        let result = response.data;
-
-        // 如果是返回的文件
+        // 如果返回的是文件
         if (response.config.responseType === "blob") {
-            return result;
+            return response;
+        }
+
+        //response.data是服务端返回的数据
+        const responseData = response.data;
+        if (!responseData) {
+            return response;
         }
 
         // 兼容服务端返回的字符串数据
-        if (typeof result === "string" && result) {
-            result = JSON.parse(result);
+        let result = responseData as Result<any>;
+        if (typeof responseData === "string") {
+            result = JSON.parse(responseData);
+            response.data = result;
         }
 
         // 判断业务状态
         if (result.status >= ResultStatus.EXCEPTION) {
-            elPrompt.error(result.message);
-
-            // 用户登录状态异常
-            if (result.status === ResultStatus.USER_TOKEN_EXCEPTION) {
-                localStorage.removeItem(LocalStorageKey.TOKEN);
-                // 显示登录页面
-                showUserLogin();
-            }
-
-            return Promise.reject(result.message);
+            serviceExceptionHandler(result);
+            return Promise.reject(result);
         }
 
-        return result;
+        return response;
     },
     (error: Error) => {
-        elPrompt.error(`请求失败：${error.message}`, 2);
-        return Promise.reject(error.message);
+        elPrompt.error(`请求失败，请检查控制台报错！`, 2);
+        return Promise.reject(error);
     },
 );
 

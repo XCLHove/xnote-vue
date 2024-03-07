@@ -67,13 +67,15 @@ async function searchNote() {
         searchTitle: searchText.value.title,
         current: page.value.current,
         size: page.value.size,
-    }).then((result) => {
-        page.value.total = result.data.total ? result.data.total : 0;
-        page.value.list = result.data.list ? result.data.list : [];
-    });
-
-    // 关闭加载动画
-    loading.value = false;
+    })
+        .then((result) => {
+            page.value.total = result.data.total ? result.data.total : 0;
+            page.value.list = result.data.list ? result.data.list : [];
+        })
+        .finally(() => {
+            // 关闭加载动画
+            loading.value = false;
+        });
 }
 /**搜索加锁防止频繁请求*/
 const lockSearchNote = lock(searchNote, () => {

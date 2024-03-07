@@ -90,13 +90,18 @@ async function searchNote() {
         current: page.value.current,
         size: page.value.size,
     };
-    await pageSelfNote(notePageDTO).then((result: Result<NotePageDTO>) => {
-        page.value.total = result.data.total
-            ? result.data.total
-            : page.value.total;
-        page.value.list = result.data.list ? result.data.list : page.value.list;
-    });
-    loading.value = false;
+    await pageSelfNote(notePageDTO)
+        .then((result: Result<NotePageDTO>) => {
+            page.value.total = result.data.total
+                ? result.data.total
+                : page.value.total;
+            page.value.list = result.data.list
+                ? result.data.list
+                : page.value.list;
+        })
+        .finally(() => {
+            loading.value = false;
+        });
 }
 
 /**

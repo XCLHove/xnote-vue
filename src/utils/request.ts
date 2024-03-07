@@ -10,7 +10,7 @@ import { Result } from "@/interfaces/Result.ts";
 
 //读取外部配置文件中的后端地址
 let baseURL = "http://localhsot:8080";
-await getConfig((config: Config) => {
+await getConfig().then((config: Config) => {
     baseURL = config.serverUrl ? config.serverUrl : baseURL;
 });
 

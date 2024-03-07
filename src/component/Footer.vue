@@ -5,7 +5,7 @@ import { Config, getConfig } from "../utils/config.ts";
 const icp = ref("");
 
 onMounted(() => {
-    getConfig((config: Config) => {
+    getConfig().then((config: Config) => {
         icp.value = config.icp;
     });
 });

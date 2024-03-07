@@ -140,7 +140,7 @@ async function handleUploadImage(
     image = result.data;
 
     let serverUrl = "";
-    await getConfig((config: Config) => {
+    await getConfig().then((config: Config) => {
         serverUrl = config.serverUrl;
     });
 

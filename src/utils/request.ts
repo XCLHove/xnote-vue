@@ -1,25 +1,38 @@
-import axios from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { elPrompt } from "./elPrompt.ts";
 import getLocalStorage from "./getLocalStorage.ts";
 import ResultStatus from "../enums/ResultStatus.ts";
 import LocalStorageKey from "../enums/LocalStorageKey.ts";
 import RequestHeaderKey from "../enums/RequestHeaderKey.ts";
-import { Config, getConfig } from "./config.ts";
+import { getConfig } from "./config.ts";
 import serviceExceptionHandler from "@/utils/serviceExceptionHandler.ts";
 import { Result } from "@/interfaces/Result.ts";
 
-//读取外部配置文件中的后端地址
-let baseURL = "http://localhsot:8080";
-await getConfig().then((config: Config) => {
-    baseURL = config.serverUrl ? config.serverUrl : baseURL;
-});
+interface CustomAxiosConfig {
+    /**返回true则不再往后处理*/
+    extraResponseHandler:
+        | ((response: CustomAxiosResponse) => boolean)
+        | undefined;
+}
+
+type CustomAxiosInstance = AxiosInstance & { defaults: CustomAxiosConfig };
+
+type CustomAxiosResponse = AxiosResponse<any, any> & {
+    config: CustomAxiosConfig;
+};
+
+// 外部配置
+const config = await getConfig();
+
+// 后端地址
+const baseURL = config.serverUrl;
 
 const request = axios.create({
     baseURL: baseURL, // 这里加上后端接口前缀，后端必须进行跨域配置
     timeout: 10000, // ms
-});
+}) as CustomAxiosInstance;
 
-// request 拦截器，可以自请求发送前对请求做一些处理
+// request拦截器
 request.interceptors.request.use(
     (config) => {
         //设置Content-Type
@@ -36,26 +49,25 @@ request.interceptors.request.use(
     },
 );
 
-// response 拦截器，可以在接口响应后统一处理结果
+// response拦截器
 request.interceptors.response.use(
-    (response) => {
-        // 如果返回的是文件
-        if (response.config.responseType === "blob") {
+    // @ts-ignore
+    (response: CustomAxiosResponse) => {
+        if (
+            !(response.headers["content-type"] as string).includes(
+                "application/json",
+            )
+        ) {
             return response;
         }
 
-        //response.data是服务端返回的数据
-        const responseData = response.data;
-        if (!responseData) {
-            return response;
+        const extraResponseHandler = response.config.extraResponseHandler;
+        if (extraResponseHandler) {
+            request.defaults.extraResponseHandler = undefined;
         }
+        if (extraResponseHandler?.(response)) return response;
 
-        // 兼容服务端返回的字符串数据
-        let result = responseData as Result<any>;
-        if (typeof responseData === "string") {
-            result = JSON.parse(responseData);
-            response.data = result;
-        }
+        const result = response.data as Result<any>;
 
         // 判断业务状态
         if (result.status >= ResultStatus.EXCEPTION) {

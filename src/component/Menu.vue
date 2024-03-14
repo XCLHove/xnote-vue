@@ -4,7 +4,7 @@ import { ref } from "@vue/reactivity";
 const menus = ref([
     {
         title: "笔记",
-        index: "",
+        index: "/note",
         children: [
             {
                 title: "发布笔记",
@@ -13,6 +13,16 @@ const menus = ref([
             {
                 title: "我的笔记",
                 index: "/notes/user",
+            },
+        ],
+    },
+    {
+        title: "图片",
+        index: "/image",
+        children: [
+            {
+                title: "我的图片",
+                index: "/image/user",
             },
         ],
     },

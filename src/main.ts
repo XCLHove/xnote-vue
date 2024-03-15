@@ -24,6 +24,7 @@ import "@kangc/v-md-editor/lib/plugins/tip/tip.css";
 import createHighlightLinesPlugin from "@kangc/v-md-editor/lib/plugins/highlight-lines/index";
 import "@kangc/v-md-editor/lib/plugins/highlight-lines/highlight-lines.css";
 import createAlignPlugin from "@kangc/v-md-editor/lib/plugins/align";
+import createLineNumbertPlugin from "@kangc/v-md-editor/lib/plugins/line-number/index";
 
 //VMdPreview
 import VMdPreview from "@kangc/v-md-editor/lib/preview.js";
@@ -68,6 +69,7 @@ VMdEditor.use(createCopyCodePlugin());
 VMdEditor.use(createTipPlugin());
 VMdEditor.use(createHighlightLinesPlugin());
 VMdEditor.use(createAlignPlugin());
+VMdEditor.use(createLineNumbertPlugin());
 
 const app = createApp(App);
 app.use(router);

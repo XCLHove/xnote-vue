@@ -126,28 +126,28 @@ function removeKeyword(removeKeyword: string) {
  */
 async function handleUploadImage(
     event: Event,
-    insertImage: any,
+    insertImage: (options: {
+        url: string;
+        desc: string;
+        width?: string;
+        height?: string;
+    }) => void,
     files: File[],
 ) {
-    const imageFile = files[0];
-    if (imageFile.size > Math.pow(1024, 2) * 10) {
-        elPrompt.warning("图片不能超过10MB");
-        return;
+    const { serverUrl } = await getConfig();
+    for (const imageFile of files) {
+        if (imageFile.size > Math.pow(1024, 2) * 10) {
+            elPrompt.warning("图片不能超过10MB");
+            continue;
+        }
+
+        await uploadImage(imageFile).then(({ data: image }) => {
+            insertImage({
+                url: `${serverUrl}/image/downloadByName/${image.name}`,
+                desc: image.alias,
+            });
+        });
     }
-
-    let image: Image = {} as Image;
-    const result = await uploadImage(imageFile);
-    image = result.data;
-
-    let serverUrl = "";
-    await getConfig().then((config: Config) => {
-        serverUrl = config.serverUrl;
-    });
-
-    insertImage({
-        url: `${serverUrl}/image/downloadByName/${image.name}`,
-        desc: image.alias,
-    });
 }
 
 /**

@@ -12,6 +12,9 @@ import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 
+// pinia
+import { createPinia } from "pinia";
+
 //Markdown plugins
 import createTodoListPlugin from "@kangc/v-md-editor/lib/plugins/todo-list/index";
 import "@kangc/v-md-editor/lib/plugins/todo-list/todo-list.css";
@@ -72,10 +75,12 @@ VMdEditor.use(createAlignPlugin());
 VMdEditor.use(createLineNumbertPlugin());
 
 const app = createApp(App);
+const pinia = createPinia();
 app.use(router);
 app.use(ElementPlus, {
     locale: zhCn,
 });
 app.use(VMdPreview);
 app.use(VMdEditor);
+app.use(pinia);
 app.mount("#app");

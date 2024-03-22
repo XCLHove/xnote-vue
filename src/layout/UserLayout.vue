@@ -1,48 +1,22 @@
 <script setup lang="ts">
 import Icp from "../component/Footer.vue";
-import { computed, onMounted, Ref, ref } from "vue";
-import { User } from "../interfaces/entity/User.ts";
-import { getUserSelfInfo, userLogout } from "../api/UserApi.ts";
+import { computed, onMounted, ref } from "vue";
 import Login from "../views/user/Login.vue";
-import LocalStorageKey from "../enums/LocalStorageKey.ts";
-import { showUserLogin, showUserRegister } from "../utils/showLogin.ts";
-import { elPrompt } from "../utils/elPrompt.ts";
 import Register from "../views/user/Register.vue";
-import { loginListener } from "../utils/loginListener.ts";
 import Menu from "@/component/Menu.vue";
+import {
+    useShowUserLogin,
+    useShowUserRegister,
+} from "@/stores/useShowUserLoginAndRegister.ts";
+import { storeToRefs } from "pinia";
+import { useUser } from "@/stores/useUser.ts";
 
 // head
-const user: Ref<User | undefined | null> = ref();
-const avatarContent = ref("登录");
-onMounted(() => {
-    getUserInfo();
+const { value: user } = storeToRefs(useUser());
+const avatarContent = computed(() => {
+    const c = user.value?.name?.charAt(0);
+    return c ? c : "登录";
 });
-
-const removeLoginListener = loginListener(() => {
-    getUserInfo();
-});
-
-const getUserInfo = () => {
-    const token = localStorage.getItem(LocalStorageKey.TOKEN);
-    if (!token) return;
-    getUserSelfInfo().then((result) => {
-        user.value = result.data;
-        avatarContent.value = user.value.name?.charAt(0);
-    });
-};
-
-const showLogin = computed(() => {
-    return !user.value;
-});
-
-const logout = () => {
-    userLogout().then(() => {
-        localStorage.removeItem(LocalStorageKey.TOKEN);
-        user.value = null;
-        avatarContent.value = "登录";
-        elPrompt.success("注销成功！");
-    });
-};
 
 // left menu
 const screenWidth = ref(0);
@@ -79,18 +53,18 @@ const showDrawerMenu = ref(false);
                             <template #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item
-                                        v-if="showLogin"
-                                        @click="showUserLogin()"
+                                        v-if="!user"
+                                        @click="useShowUserLogin().show()"
                                         >登录</el-dropdown-item
                                     >
                                     <el-dropdown-item
-                                        v-if="showLogin"
-                                        @click="showUserRegister()"
+                                        v-if="!user"
+                                        @click="useShowUserRegister().show()"
                                         >注册</el-dropdown-item
                                     >
                                     <el-dropdown-item
-                                        v-if="!showLogin"
-                                        @click="logout"
+                                        v-if="user"
+                                        @click="useUser().logout()"
                                         >注销</el-dropdown-item
                                     >
                                 </el-dropdown-menu>

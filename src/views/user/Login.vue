@@ -1,25 +1,14 @@
 <script setup lang="ts">
-import { listenMessage } from "@/utils/crossTagMessage.ts";
-import { onUnmounted, ref } from "vue";
+import { ref } from "vue";
 import { elPrompt } from "@/utils/elPrompt.ts";
 import { userLogin } from "@/api/UserApi.ts";
 import { FormInstance, FormRules } from "element-plus";
 import LocalStorageKey from "@/enums/LocalStorageKey.ts";
-import CrossTagMessageKey from "@/enums/CrossTagMessageKey.ts";
-import { showUserRegister } from "@/utils/showLogin.ts";
-
-const showLogin = ref(false);
-
-const removeListener = listenMessage(
-    CrossTagMessageKey.SHOW_USER_LOGIN,
-    (value) => {
-        showLogin.value = value;
-    },
-    false,
-);
-onUnmounted(() => {
-    removeListener();
-});
+import {
+    useShowUserLogin,
+    useShowUserRegister,
+} from "@/stores/useShowUserLoginAndRegister.ts";
+import { storeToRefs } from "pinia";
 
 const user = ref({
     account: "",
@@ -59,9 +48,9 @@ const formValidateRules = ref<FormRules<typeof user>>({
     ],
 });
 
-/**
- * 用户登录
- */
+const { value: showLogin } = storeToRefs(useShowUserLogin());
+
+/**用户登录*/
 const login = () => {
     formRef.value?.validate((isValid: boolean) => {
         if (!isValid) return;
@@ -72,7 +61,7 @@ const login = () => {
         }).then((result) => {
             localStorage.setItem(LocalStorageKey.TOKEN, result.data);
             elPrompt.success(result.message);
-            showLogin.value = false;
+            useShowUserLogin().hide();
 
             formRef.value?.resetFields();
         });
@@ -80,8 +69,8 @@ const login = () => {
 };
 
 const showRegister = () => {
-    showLogin.value = false;
-    showUserRegister();
+    useShowUserLogin().hide();
+    useShowUserRegister().show();
 };
 </script>
 
@@ -93,6 +82,7 @@ const showRegister = () => {
             :center="true"
             width="350"
             top="35vh"
+            @close="useShowUserLogin().hide()"
         >
             <el-form
                 :status-icon="true"

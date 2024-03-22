@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, Ref, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import {
     deleteImageByIds,
     downloadImageById,
@@ -16,6 +16,8 @@ import ImagePreview from "@/component/ImagePreview.vue";
 import formatDate from "../../utils/formatDate.ts";
 import isMobile from "@/utils/isMobile.ts";
 import { ElMessageBox } from "element-plus";
+import { onLogout } from "@/utils/onLogout.ts";
+import { onLogin } from "@/utils/onLogin.ts";
 
 const isMobileWidth = computed(() => isMobile());
 
@@ -188,6 +190,18 @@ const changeImage = (image: Image) => {
         })
         .catch(() => {});
 };
+
+const removeLoginListener = onLogin(() => {
+    pageImageLocked = false;
+    pageImage();
+});
+const removeLogoutListener = onLogout(() => {
+    images.value = [];
+});
+onUnmounted(() => {
+    removeLoginListener();
+    removeLogoutListener();
+});
 </script>
 
 <template>

@@ -1,27 +1,18 @@
 <script setup lang="ts">
-import { onUnmounted, ref } from "vue";
-import { listenMessage } from "../../utils/crossTagMessage.ts";
-import CrossTagMessageKey from "../../enums/CrossTagMessageKey.ts";
+import { ref } from "vue";
 import { FormInstance, FormRules } from "element-plus";
-import { UserDTO } from "../../interfaces/entity/dto/UserDTO.ts";
-import { sendVerificationCode, userRegister } from "../../api/UserApi.ts";
-import { Result } from "../../interfaces/Result.ts";
-import { User } from "../../interfaces/entity/User.ts";
-import { elPrompt } from "../../utils/elPrompt.ts";
-import { showUserLogin } from "../../utils/showLogin.ts";
+import { UserDTO } from "@/interfaces/entity/dto/UserDTO.ts";
+import { sendVerificationCode, userRegister } from "@/api/UserApi.ts";
+import { Result } from "@/interfaces/Result.ts";
+import { User } from "@/interfaces/entity/User.ts";
+import { elPrompt } from "@/utils/elPrompt.ts";
+import {
+    useShowUserLogin,
+    useShowUserRegister,
+} from "@/stores/useShowUserLoginAndRegister.ts";
+import { storeToRefs } from "pinia";
 
-const showRegister = ref(false);
-
-const removeListener = listenMessage(
-    CrossTagMessageKey.SHOW_USER_Register,
-    (value) => {
-        showRegister.value = value;
-    },
-    false,
-);
-onUnmounted(() => {
-    removeListener();
-});
+const { value: showRegister } = storeToRefs(useShowUserRegister());
 
 const registerFormRef = ref<FormInstance>();
 const registerForm = ref<UserDTO>({
@@ -117,9 +108,9 @@ const submitForm = () => {
         userRegister(registerForm.value).then((result: Result<User>) => {
             if (result.status !== 200) return;
             elPrompt.success("注册成功！");
-            showRegister.value = false;
+            useShowUserRegister().hide();
             registerFormRef.value?.resetFields();
-            showUserLogin();
+            useShowUserLogin().show();
         });
     });
 };
@@ -178,6 +169,7 @@ const send = () => {
             :center="true"
             width="350"
             top="25vh"
+            @close="useShowUserRegister().hide()"
         >
             <el-form
                 ref="registerFormRef"

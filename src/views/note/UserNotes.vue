@@ -15,7 +15,8 @@ import { debounce } from "@/utils/debounce/debounce.ts";
 import NoteIsPublic from "@/enums/NoteIsPublic.ts";
 import { ElMessageBox } from "element-plus";
 import { getSizes } from "@/utils/getSizes.ts";
-import { loginListener } from "@/utils/loginListener.ts";
+import { onLogin } from "@/utils/onLogin.ts";
+import { onLogout } from "@/utils/onLogout.ts";
 
 const loading = ref(false);
 
@@ -184,12 +185,16 @@ const changeNotePublicStatus = (note: Note) => {
     });
 };
 
-const removeLoginListener = loginListener(() => {
+const removeLoginListener = onLogin(() => {
     searchLocked = false;
     searchNote();
 });
+const removeLogoutListener = onLogout(() => {
+    page.value.list = [];
+});
 onUnmounted(() => {
     removeLoginListener();
+    removeLogoutListener();
 });
 </script>
 

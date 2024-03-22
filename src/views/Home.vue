@@ -7,7 +7,8 @@ import lock from "@/utils/lock.ts";
 import { elPrompt } from "@/utils/elPrompt.ts";
 import NoteIsPublic from "@/enums/NoteIsPublic.ts";
 import { getSizes } from "@/utils/getSizes.ts";
-import { loginListener } from "@/utils/loginListener.ts";
+import { onLogin } from "@/utils/onLogin.ts";
+import { onLogout } from "@/utils/onLogout.ts";
 
 // 搜索文本
 const searchText = ref({
@@ -140,12 +141,17 @@ const tableHeight = computed(() => {
     return window.innerHeight - 210;
 });
 
-const removeLoginListener = loginListener(() => {
+const removeLoginListener = onLogin(() => {
+    searchRepeat.unlock();
+    searchNote();
+});
+const removeLogoutListener = onLogout(() => {
     searchRepeat.unlock();
     searchNote();
 });
 onUnmounted(() => {
     removeLoginListener();
+    removeLogoutListener();
 });
 </script>
 

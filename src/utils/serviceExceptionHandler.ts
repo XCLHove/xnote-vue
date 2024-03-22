@@ -1,8 +1,8 @@
 import ResultStatus from "@/enums/ResultStatus.ts";
-import { showUserLogin } from "@/utils/showLogin.ts";
 import LocalStorageKey from "@/enums/LocalStorageKey.ts";
 import { Result } from "@/interfaces/Result.ts";
 import { elPrompt } from "@/utils/elPrompt.ts";
+import { useShowUserLogin } from "@/stores/useShowUserLoginAndRegister.ts";
 
 const handler: {
     [key: number]: (result: Result<any>) => void;
@@ -11,7 +11,7 @@ const handler: {
     [ResultStatus.USER_TOKEN_EXCEPTION]: () => {
         localStorage.removeItem(LocalStorageKey.TOKEN);
         // 显示用户登录页面
-        showUserLogin();
+        useShowUserLogin().show();
     },
 };
 

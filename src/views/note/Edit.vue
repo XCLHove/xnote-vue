@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, Ref, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, Ref, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { Note } from "@/interfaces/entity/Note.ts";
 import { addNote, getNoteById, updateNote } from "@/api/NoteApi.ts";
@@ -10,6 +10,7 @@ import { Image } from "@/interfaces/entity/Image.ts";
 import NoteIsPublic from "@/enums/NoteIsPublic.ts";
 import lock from "@/utils/lock.ts";
 import { Config, getConfig } from "@/utils/config.ts";
+import ImagePreview from "@/component/ImagePreview.vue";
 
 /**当前正在编辑的笔记*/
 const note: Ref<Note> = ref({
@@ -193,6 +194,32 @@ const validateAccessCode = () => {
     }
     return validatePass;
 };
+
+const imagePreview: Ref<{ show: boolean; src: string; alt?: string }> = ref({
+    show: false,
+    src: "",
+    alt: "",
+});
+const previewListener = () => {
+    const listener = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName.toLowerCase() !== "img") return;
+
+        const imgEl = target as HTMLImageElement;
+        imagePreview.value.src = imgEl.src;
+        imagePreview.value.alt = imgEl.alt;
+        imagePreview.value.show = true;
+    };
+    window.addEventListener("click", listener);
+
+    return () => {
+        window.removeEventListener("click", listener);
+    };
+};
+const removePreviewListener = previewListener();
+onUnmounted(() => {
+    removePreviewListener();
+});
 </script>
 
 <template>
@@ -283,6 +310,12 @@ const validateAccessCode = () => {
                 @copy-code-success="handleCopyCodeSuccess"
             />
         </div>
+        <!--图片预览-->
+        <ImagePreview
+            v-model:show="imagePreview.show"
+            v-model:src="imagePreview.src"
+            v-model:alt="imagePreview.alt"
+        />
     </div>
 </template>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref } from "vue";
+import { onMounted, onUnmounted, Ref, ref } from "vue";
 import { useRoute } from "vue-router";
 import { Note } from "@/interfaces/entity/Note.ts";
 import { getNoteById } from "@/api/NoteApi.ts";
@@ -8,6 +8,7 @@ import { elPrompt } from "@/utils/elPrompt.ts";
 import NoteIsPublic from "@/enums/NoteIsPublic.ts";
 import { ElMessageBox } from "element-plus";
 import ResultStatus from "@/enums/ResultStatus.ts";
+import ImagePreview from "@/component/ImagePreview.vue";
 
 const note: Ref<Note> = ref({
     content: "",
@@ -68,6 +69,32 @@ onMounted(() => {
 function handleCopyCodeSuccess(code: string) {
     elPrompt.success("复制成功！");
 }
+
+const imagePreview = ref({
+    show: false,
+    src: "",
+    alt: "",
+});
+const previewListener = () => {
+    const listener = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName.toLowerCase() !== "img") return;
+
+        const imgEl = target as HTMLImageElement;
+        imagePreview.value.src = imgEl.src;
+        imagePreview.value.alt = imgEl.alt;
+        imagePreview.value.show = true;
+    };
+    window.addEventListener("click", listener);
+
+    return () => {
+        window.removeEventListener("click", listener);
+    };
+};
+const removePreviewListener = previewListener();
+onUnmounted(() => {
+    removePreviewListener();
+});
 </script>
 
 <template>
@@ -90,6 +117,12 @@ function handleCopyCodeSuccess(code: string) {
             @copy-code-success="handleCopyCodeSuccess"
         />
     </div>
+    <!--图片预览-->
+    <ImagePreview
+        v-model:show="imagePreview.show"
+        v-model:src="imagePreview.src"
+        v-model:alt="imagePreview.alt"
+    />
 </template>
 
 <style scoped lang="less">
